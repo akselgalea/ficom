@@ -611,19 +611,24 @@ class Estudiante extends Model
 
         return $totalAPagar - $totalPagado;
     }
-    /**
-     * @return 
-     * 
-     */
-    public function recordatorioDePago() {
-        $estudiante = Estudiante::find(1);
+
+    public function recordatorioDePago($id) {
+        $estudiante = Estudiante::find($id);
+        
+        if(!$estudiante) 
+            return false;
+
         $totalAPagar = $estudiante->getTotalAPagarPorMes();
         
         if($totalAPagar == 0) 
             return false;
         
         $mes = $this->getMes(date('m'));
-        $apoderado = $estudiante->apoderadoTitular()->first();
+        $apoderado = $estudiante->getApoderado();
+
+        if(!$apoderado) 
+            return false;
+
         $datosPago = [
             'mes' => $mes,
             'arancel' => $estudiante->curso->arancel,
@@ -633,6 +638,11 @@ class Estudiante extends Model
         ];
 
         Mail::mailer("smtp")->to($apoderado->email)->send(new RecordatorioPago($estudiante, $apoderado, $datosPago));
+
         return true;
+    }
+
+    public function getApoderado() {
+        return $this->apoderadoTitular()->first() ?? $this->apoderadoSuplente()->first();
     }
 }
