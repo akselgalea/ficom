@@ -89,8 +89,28 @@ class Estudiante extends Model
         return $this->apoderadoSuplente->count() > 0;
     }
 
-    public function getReporteFicomAttribute() {
-        $anio = '2023';
+    public function scopeSearchByCurso($query, $curso)
+    {
+        $query->where('curso_id', '=', $curso);
+    }
+
+    public function scopeSearchByName($query, $text)
+    {
+        $query->where('nombres', 'LIKE', "%$text%");
+    }
+
+    public function scopeSearchBySurname($query, $text)
+    {
+        $query->orWhere('apellidos', 'LIKE', "%$text%");
+    }
+
+    public function scopeSearchByRut($query, $text)
+    {
+        $query->orWhere('rut', 'LIKE', "%$text%");
+    }
+
+    public function getReporteFicomAttribute($year = null) {
+        $anio = $year ?? now()->year;
 
         return [
             'RBD' => env('RBD'),
@@ -167,10 +187,12 @@ class Estudiante extends Model
         //Busqueda y firtrado por Temas
         if ($curso != 'todos') {
             if ($req->search) {
+
                 $estudiantes = Estudiante::with('curso')
                     ->searchByName($req->search)
                     ->searchBySurname($req->search)
                     ->searchByRut($req->search)
+                    ->searchByCurso($curso)
                     ->paginate($perPage);
 
                 return ['estudiantes' => $estudiantes, 'perPage' => $perPage];
@@ -196,30 +218,12 @@ class Estudiante extends Model
 
     public function show($id)
     {
-        $estudiante = Estudiante::with('curso', 'beca')->find($id);
+        $estudiante = Estudiante::with('curso', 'beca')->findOrFail($id);
         $estudiante["apoderado_titular"] = $estudiante->apoderadoTitular()->first();
         $estudiante["apoderado_suplente"] = $estudiante->apoderadoSuplente()->first();
-        $estudiante->recordatorioDePago();
+        $estudiante->recordatorioDePago($id);
 
         return ['estudiante' => $estudiante, 'cursos' => Curso::all(), 'becas' => Beca::all()];
-    }
-
-    public function scopeSearchByName($query, $text)
-    {
-        if ($text)
-            $query->orWhere('nombres', 'LIKE', "%$text%");
-    }
-
-    public function scopeSearchBySurname($query, $text)
-    {
-        if ($text)
-            $query->orWhere('apellidos', 'LIKE', "%$text%");
-    }
-
-    public function scopeSearchByRut($query, $text)
-    {
-        if ($text)
-            $query->orWhere('rut', 'LIKE', "%$text%");
     }
 
     public function store($req)
@@ -476,7 +480,18 @@ class Estudiante extends Model
      *   @return integer       --> total que falta pagar en ese mes
     */
     public function totalAPagar($year, $month, $tAP) {
+        if($month == 'matricula')
+            return $this->totalAPagarMatricula($year);
+
         return $tAP - $this->totalPagadoMes($this->pagosMes($year, $month));
+    }
+
+    public function totalAPagarMatricula($year) {
+        $total = $this->curso->nivel->matricula;
+        $descuentos = $this->getDescuentos();
+        $tAP = $total * (1 - number_format('0.'. $descuentos, 2));
+
+        return $tAP - $this->totalPagadoMes($this->pagosMes($year, 'matricula'));
     }
 
     public function poseeRun()
@@ -500,7 +515,7 @@ class Estudiante extends Model
                 
                 $total = $this->totalPagadoMes($pagosMes);
                 
-                if ($total == $this->curso->arancel)
+                if ($total == $this->curso->nivel->arancel)
                     $cantidad++;
             }
         }
@@ -527,24 +542,35 @@ class Estudiante extends Model
         foreach ($this->pagosPorAnio($anio) as $mes => $pagosMes) {
             $total = $this->totalPagadoMes($pagosMes);
 
-            if ($total < $this->curso->arancel)
-                array_push($meses, ['mes' => $mes, 'pagado' => $total, 'falta' => $this->curso->arancel - $total]);
+            if ($total < $this->curso->nivel->arancel)
+                array_push($meses, ['mes' => $mes, 'pagado' => $total, 'falta' => $this->curso->nivel->arancel - $total]);
         }
 
         return $meses;
     }
+
+    public function getTotalMensualidadesBoleta($year) {
+        $total = 0;
+        $pagos = $this->pagos()->year($year)->boleta()->get();
+
+        foreach($pagos as $pago) {
+            $total += $pago->valor;
+        }
+
+        return $total;
+    }
     
-    public function registrosFicom($anio)
+    public function registrosFicom($year)
     {
         return [
             'RBD' => env('RBD', 14901),
             'Posee RUN' => $this->poseeRun(),
-            'RUN alumno' => $this->rut . '-' . $this->dv,
+            'RUN alumno' => $this->rut,
             'DV alumno' => $this->dv,
-            'Annio mensualidad percibida' => $anio,
-            'Monto total mensualidad' => $this->totalMensualidades($anio),
+            'Annio mensualidad percibida' => $year,
+            'Monto total mensualidad' => $this->getTotalMensualidadesBoleta($year),
             'Monto total intereses y/o gastos de cobranza' => 0,
-            'Cantidad de mensualidades' => $this->mesesPagados($anio),
+            'Cantidad de mensualidades' => $this->pagos()->year($year)->boleta()->count(),
             'Tipo de Documento' => env('TIPO_DOCUMENTO', 'BOLEX')
         ];
     }
@@ -569,7 +595,7 @@ class Estudiante extends Model
     }
 
     public function getArancel() {
-        return $this->curso->arancel;
+        return $this->curso->nivel->arancel;
     }
 
     /**
@@ -579,28 +605,26 @@ class Estudiante extends Model
     */
     public function getTotalAPagarPorMes() {
         $total = $this->getArancel();
-        $beca = $this->beca;
-        $descuentos = 0;
+        $descuentos = $this->getDescuentos();
 
-        if($this->prioridad == 'prioritario')
+        if($descuentos >= 100) 
             return 0;
-
-        else if($this->prioridad == 'nuevo prioritario')
-            $descuentos += env('DESCUENTO_NUEVO_PRIORITARIO');
-
-        if($beca)
-            $descuentos += $beca->descuento;
 
         return $total * (1 - number_format('0.'. $descuentos, 2));
     }
 
     public function getDescuentos() {
         $descuentos = 0;
+        $beca = $this->beca;
 
-        if($this->priordidad == 'nuevo prioritario')
+        if($this->prioridad == 'prioritario')
+            return 100;
+
+        if($this->prioridad == 'nuevo prioritario')
             $descuentos += env('DESCUENTO_NUEVO_PRIORITARIO');
 
-        if($this->beca()) $descuentos += $this->beca->descuento;
+        if($beca)
+            $descuentos += $beca->descuento;
 
         return $descuentos;
     }
@@ -613,33 +637,34 @@ class Estudiante extends Model
     }
 
     public function recordatorioDePago($id) {
-        $estudiante = Estudiante::find($id);
-        
-        if(!$estudiante) 
+        try {
+            $estudiante = Estudiante::findOrFail($id);
+    
+            $totalAPagar = $estudiante->getTotalAPagarPorMes();
+            
+            if($totalAPagar == 0) 
+                return false;
+            
+            $mes = $this->getMes(date('m'));
+            $apoderado = $estudiante->getApoderado();
+    
+            if(!$apoderado) 
+                return false;
+    
+            $datosPago = [
+                'mes' => $mes,
+                'arancel' => $estudiante->curso->nivel->arancel,
+                'totalDescuentos' => $estudiante->getDescuentos(),
+                'abonado' => $estudiante->totalPagadoMes($estudiante->pagosMes(date('y'), $mes)),
+                'totalPagar' => $estudiante->getTotalAPagarPorMes()
+            ];
+    
+            Mail::mailer("smtp")->to($apoderado->email)->send(new RecordatorioPago($estudiante, $apoderado, $datosPago));
+    
+            return true;
+        } catch (Exception $e) {
             return false;
-
-        $totalAPagar = $estudiante->getTotalAPagarPorMes();
-        
-        if($totalAPagar == 0) 
-            return false;
-        
-        $mes = $this->getMes(date('m'));
-        $apoderado = $estudiante->getApoderado();
-
-        if(!$apoderado) 
-            return false;
-
-        $datosPago = [
-            'mes' => $mes,
-            'arancel' => $estudiante->curso->arancel,
-            'totalDescuentos' => $estudiante->getDescuentos(),
-            'abonado' => $estudiante->totalPagadoMes($estudiante->pagosMes(date('y'), $mes)),
-            'totalPagar' => $estudiante->getTotalAPagarPorMes()
-        ];
-
-        Mail::mailer("smtp")->to($apoderado->email)->send(new RecordatorioPago($estudiante, $apoderado, $datosPago));
-
-        return true;
+        }
     }
 
     public function getApoderado() {

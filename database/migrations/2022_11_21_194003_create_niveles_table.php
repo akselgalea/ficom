@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('cursos', function (Blueprint $table) {
+        Schema::create('niveles', function (Blueprint $table) {
             $table->id();
-            $table->string('curso');
-            $table->string('paralelo');
-            $table->foreignId('nivel_id');
-            $table->foreign('nivel_id')->references('id')->on('niveles');
+            $table->string('nombre');
+            $table->integer('matricula');
+            $table->integer('arancel');
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cursos');
+        Schema::dropIfExists('niveles');
     }
 };

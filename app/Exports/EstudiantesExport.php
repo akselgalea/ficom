@@ -12,8 +12,11 @@ class EstudiantesExport implements FromView
     * @return \Illuminate\Support\Collection
     */
     private $id;
-    public function __construct($id = null) {
+    private $year;
+
+    public function __construct($id = null, $year = null) {
         $this->id = $id;
+        $this->year = $year ?? now()->year;
     }
 
     public function view(): View
@@ -21,14 +24,14 @@ class EstudiantesExport implements FromView
         $registros = [];
 
         if($this->id) {
-            array_push($registros, Estudiante::find($this->id)->registrosFicom('2023'));
+            array_push($registros, Estudiante::find($this->id)->registrosFicom($this->year));
         }
         
         else {
             $estudiantes = Estudiante::all();
 
             foreach($estudiantes as $estudiante) {
-                array_push($registros, $estudiante->registrosFicom('2023'));
+                array_push($registros, $estudiante->registrosFicom($this->year));
             }
         }
 

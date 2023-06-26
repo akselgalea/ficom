@@ -1,25 +1,22 @@
 @extends('layouts.app')
 @section('content')
-@php if(session('res') && session('res')['status'] == 400) $cursoErr = session('res')['cursoErr']; @endphp
-
 <div class="container card form-container">
-    <form method="post" action="{{ route('curso.update', $curso->id) }}" id="formCurso" class="mt-3 row">
-        @csrf
-        <h2 class="form-title">{{ $curso->curso . '-' . $curso->paralelo }}</h2>
-        
-        <div class="form-group mb-3 col-12">
-            <label class="form-label" for="arancel">Arancel</label>
-            <input type="number" class="form-control" id="arancel" name="arancel" value="{{isset($cursoErr) ? $cursoErr['arancel'] : $curso->arancel}}" disabled />
-        </div>
+    <h2 class="form-title">{{ $curso->curso . '-' . $curso->paralelo }}</h2>
+    
+    <div class="form-group mb-3 col-12">
+        <div class="form-label">Nivel</label>
+        <div class="form-control">{{$curso->nivel->nombre}}</div>
+    </div>
 
-        @if(auth()->user()->hasAnyRole('admin', 'contabilidad'))
-            <div class="buttons">
-                <button type="button" id="btn-editar" class="btn btn-secondary" onclick="editar()">Editar</button>
-                <button type="button" id="btn-cancelar" class="btn btn-danger" onclick="cancelEditar()" hidden>Cancelar</button>
-                <button type="submit" id="btn-enviar" class="btn btn-primary" hidden>Guardar</button>
-            </div>
-        @endif
-    </form>
+    <div class="form-group mb-3 col-12">
+        <div class="form-label">Matrícula</label>
+        <div class="form-control">{{toCLP($curso->nivel->matricula)}}</div>
+    </div>
+
+    <div class="form-group mb-3 col-12">
+        <div class="form-label">Arancel</label>
+        <div class="form-control">{{toCLP($curso->nivel->arancel)}}</div>
+    </div>
 </div>
 
 <div class="container card mt-3" id="table">
@@ -99,35 +96,4 @@
         margin-bottom: 1rem;
     }
 </style>
-
-<script>
-    const btneditar = document.getElementById('btn-editar');
-    const cancelar = document.getElementById('btn-cancelar');
-    const enviar = document.getElementById('btn-enviar');
-
-    //Campos
-    const arancel = document.getElementById('arancel');
-    
-    function editar() {
-        btneditar.hidden = true;
-        cancelar.hidden = false;
-        enviar.hidden = false;
-        enableInput();
-    }
-
-    function cancelEditar() {
-        btneditar.hidden = false;
-        cancelar.hidden = true;
-        enviar.hidden = true;
-        disableInput();
-    }
-
-    function enableInput() {
-        arancel.disabled = false;
-    }
-
-    function disableInput() {
-        arancel.disabled = true;
-    }
-</script>
 @endsection

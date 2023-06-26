@@ -65,6 +65,7 @@
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a href="{{ route('beca.index') }}" class="dropdown-item">Becas</a>
                                     <a href="{{ route('curso.index') }}" class="dropdown-item">Cursos</a>
+                                    <a href="{{ route('nivel.index') }}" class="dropdown-item">Niveles</a>
                                 </div>
                             </li>
                             <li class="nav-item dropdown">

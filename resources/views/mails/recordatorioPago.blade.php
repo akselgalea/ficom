@@ -53,11 +53,11 @@
 
         <div class="mail-body">
             <div class="pricelist">
-                <div>Monto arancel: ${{$datosPago['arancel']}}</div>
+                <div>Monto arancel: {{toCLP($datosPago['arancel'])}}</div>
                 <div>Descuentos: {{$datosPago['totalDescuentos']}}%</div>
-                <div>Monto abonado: ${{$datosPago['abonado']}}</div>
+                <div>Monto abonado: {{toCLP($datosPago['abonado'])}}</div>
             </div>
-            <p class="total">Total a pagar: ${{$datosPago['totalPagar']}}</p>
+            <p class="total">Total a pagar: {{toCLP($datosPago['totalPagar'])}}</p>
         </div>
     </div>
 </body>

@@ -2,7 +2,7 @@
 @section('content')
 @php
     $totalAPagarPorMes = $estudiante->getTotalAPagarPorMes();
-    $mesAPagar = $estudiante->mesFaltante($estudiante->pagos_anio, $totalAPagarPorMes);
+    $mesAPagar = old('mes') ?? $estudiante->mesFaltante($estudiante->pagos_anio, $totalAPagarPorMes);
     $total = $estudiante->getTotalAPagarMes($mesAPagar);
 @endphp
 
@@ -30,7 +30,7 @@
 
         <div class="form-group mb-3 col-4">
             <label for="monto_mensual" class="form-label">Monto mensualidad</label>
-            <p class="form-control">{{ toCLP($estudiante->curso->arancel) }}</p>
+            <p class="form-control">{{ toCLP($estudiante->curso->nivel->arancel) }}</p>
         </div>
         <div class="form-group mb-3 col-4">
             <label for="beca" class="form-label">% Beca</label>

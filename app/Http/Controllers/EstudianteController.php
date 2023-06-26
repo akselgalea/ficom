@@ -107,7 +107,7 @@ class EstudianteController extends Controller
 
     public function pagos($id)
     {
-        $estudiante = $this->estud::with('curso', 'beca')->find($id);
+        $estudiante = $this->estud::with('curso', 'beca')->findOrFail($id);
         $estudiante->pagos_anio = $estudiante->pagosPorAnio('2023');
         $estudiante->apoderado_titular = $estudiante->apoderadoTitular()->first();
 

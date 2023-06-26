@@ -2,10 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\BecaController;
 use App\Http\Controllers\CursoController;
+use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\FicomController;
+use App\Http\Controllers\NivelController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +53,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/becas/{id}/editar', [BecaController::class, 'update'])->name('beca.update');
         Route::delete('/becas/{id}/borrar', [BecaController::class, 'destroy'])->name('beca.delete');
         
+        //Niveles
+        Route::prefix('niveles')->group(function () {
+            Route::get('/', [NivelController::class, 'index'])->name('nivel.index');
+            Route::get('/{id}/cursos', [NivelController::class, 'cursos'])->name('nivel.cursos');
+            Route::get('/{id}/editar', [NivelController::class, 'edit'])->name('nivel.edit');
+            Route::patch('/{id}/editar', [NivelController::class, 'update'])->name('nivel.update');
+        });
+
         //Cursos
         Route::get('/cursos', [CursoController::class, 'index'])->name('curso.index');
         Route::get('/cursos/{id}', [CursoController::class, 'show'])->name('curso.show');

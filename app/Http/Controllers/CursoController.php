@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Curso;
+use App\Models\{Curso, Nivel};
 use Exception;
 
 class CursoController extends Controller
@@ -15,7 +15,7 @@ class CursoController extends Controller
     }
 
     public function index() {
-        return view('curso.index', ['cursos' => $this->curso::all()]);
+        return view('curso.index', ['cursos' => $this->curso::all(), 'niveles' => Nivel::all()]);
     }
 
     public function show($id) {

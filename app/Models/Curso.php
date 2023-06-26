@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\{HasMany, BelongsTo};
 use Exception;
 use Illuminate\Validation\Rule;
 
@@ -16,7 +16,7 @@ class Curso extends Model
         'id',
         'curso',
         'paralelo',
-        'arancel'
+        'nivel_id'
     ];
     /**
      * Get all of the estudiantes for the Curso
@@ -26,6 +26,11 @@ class Curso extends Model
     public function estudiantes(): HasMany
     {
         return $this->hasMany(Estudiante::class);
+    }
+
+    public function nivel(): BelongsTo 
+    {
+        return $this->belongsTo(Nivel::class);
     }
 
     public function cantEstudiantes() {
@@ -44,26 +49,7 @@ class Curso extends Model
         return $this->estudiantes()->where('prioridad', 'nuevo prioritario');
     }
 
-    private function rules(): array {
-        return [
-            'arancel' => 'required'
-        ];
-    }
-
-    private function messages(): array {
-        return [
-            'required' => 'El campo :attribute es obligatorio',
-        ];
-    }
-
-    private function attributes(): array {
-        return [
-            'arancel'
-        ];
-    }
-
-    public function actualizar($id, $req) {
-        $req->validate($this->rules(), $this->messages(), $this->attributes());
+    public function actualizar($id, $req) {;
         try {
             Curso::find($id)->update($req->all());
             return ['status' => 200, 'message' => 'Curso actualizado con éxito']; 

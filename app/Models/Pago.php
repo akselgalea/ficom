@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Validation\Rule;
+use Illuminate\Database\Eloquent\Builder;
 
 class Pago extends Model
 {
@@ -71,5 +72,15 @@ class Pago extends Model
             'forma',
             'observacion'
         ];
+    }
+
+    public function scopeBoleta(Builder $query): void
+    {
+        $query->where('documento', '=', 'boleta');
+    }
+
+    public function scopeYear(Builder $query, $year): void
+    {
+        $query->where('anio', '=', $year);
     }
 }
