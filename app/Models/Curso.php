@@ -79,7 +79,7 @@ class Curso extends Model
         array_push($res, [
           "nombre_completo" => "$e->nombres $e->apellidos",
           "monto_anual" => $monto_anual,
-          "beca" => $e->beca->descuento,
+          "beca" => $e->beca->descuento ?? 0,
           "excencion" => null,
           "prioritario" => $e->prioridad,
           "matricula" => $e->costoMatricula(),

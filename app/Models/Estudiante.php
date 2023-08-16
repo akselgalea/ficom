@@ -490,6 +490,9 @@ class Estudiante extends Model
         $total = $this->curso->nivel->matricula;
         $descuentos = $this->getDescuentos();
 
+        if($descuentos >= 100)
+          return 0;
+        
         return $total * (1 - number_format('0.'. $descuentos, 2));
     }
 
