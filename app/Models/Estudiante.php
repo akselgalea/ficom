@@ -486,10 +486,15 @@ class Estudiante extends Model
         return $tAP - $this->totalPagadoMes($this->pagosMes($year, $month));
     }
 
-    public function totalAPagarMatricula($year) {
+    public function costoMatricula() {
         $total = $this->curso->nivel->matricula;
         $descuentos = $this->getDescuentos();
-        $tAP = $total * (1 - number_format('0.'. $descuentos, 2));
+
+        return $total * (1 - number_format('0.'. $descuentos, 2));
+    }
+
+    public function totalAPagarMatricula($year) {
+        $tAP = $this->costoMatricula();
 
         return $tAP - $this->totalPagadoMes($this->pagosMes($year, 'matricula'));
     }
@@ -669,5 +674,10 @@ class Estudiante extends Model
 
     public function getApoderado() {
         return $this->apoderadoTitular()->first() ?? $this->apoderadoSuplente()->first();
+    }
+
+    public function montoAnual() {
+        $totalXMes = $this->getTotalAPagarPorMes();
+        return ($totalXMes * 12) + $this->costoMatricula();
     }
 }
