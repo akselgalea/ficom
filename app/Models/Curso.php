@@ -73,18 +73,19 @@ class Curso extends Model
       $res = [];
 
       foreach ($estudiantes as $e) {
-        $monto_cancelado = 0;
+        $monto_cancelado = $e->getTotalPagos();
+        $monto_anual = $e->montoAnual();
 
         array_push($res, [
           "nombre_completo" => "$e->nombres $e->apellidos",
-          "monto_anual" => $e->montoAnual(),
+          "monto_anual" => $monto_anual,
           "beca" => $e->beca->descuento,
           "excencion" => null,
           "prioritario" => $e->prioridad,
           "matricula" => $e->costoMatricula(),
           "abono" => 25000,
           "monto_cancelado" => $monto_cancelado,
-          "monto_pendiente" => $e->montoAnual() - $monto_cancelado
+          "monto_pendiente" => $monto_anual ? $monto_anual - $monto_cancelado : 0
         ]);
       }
       

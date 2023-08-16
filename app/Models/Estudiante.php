@@ -554,9 +554,24 @@ class Estudiante extends Model
         return $meses;
     }
 
-    public function getTotalMensualidadesBoleta($year) {
+    public function getTotalMensualidadesBoleta($year = 0) {
+        if(!$year) $year = now()->year;
+
         $total = 0;
         $pagos = $this->pagos()->year($year)->boleta()->get();
+
+        foreach($pagos as $pago) {
+            $total += $pago->valor;
+        }
+
+        return $total;
+    }
+
+    public function getTotalPagos($year = 0) {
+        if(!$year) $year = now()->year;
+
+        $total = 0;
+        $pagos = $this->pagos()->year($year)->get();
 
         foreach($pagos as $pago) {
             $total += $pago->valor;
