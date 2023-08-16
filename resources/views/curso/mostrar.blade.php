@@ -1,6 +1,10 @@
 @extends('layouts.app')
 @section('content')
 <div class="container card form-container">
+    <div class="mb-3">
+      <a href="{{ route('curso.pagos.generar', $curso->id)}}" class="btn btn-primary">Informe pagos</a>
+    </div>
+
     <h2 class="form-title">{{ $curso->curso . '-' . $curso->paralelo }}</h2>
     
     <div class="form-group mb-3 col-12">

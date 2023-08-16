@@ -66,4 +66,28 @@ class Curso extends Model
             return ['status' => 400, 'message' => 'No se pudo eliminar el curso'];
         }
     }
+
+    public function informeMontoPendiente() {
+      $estudiantes = $this->estudiantes;
+
+      $res = [];
+
+      foreach ($estudiantes as $e) {
+        $monto_cancelado = 0;
+
+        array_push($res, [
+          "nombre_completo" => "$e->nombres $e->apellidos",
+          "monto_anual" => $e->montoAnual(),
+          "beca" => $e->beca->descuento,
+          "excencion" => null,
+          "prioritario" => $e->prioridad,
+          "matricula" => $e->costoMatricula(),
+          "abono" => 25000,
+          "monto_cancelado" => $monto_cancelado,
+          "monto_pendiente" => $e->montoAnual() - $monto_cancelado
+        ]);
+      }
+      
+      return $res;
+    }
 }

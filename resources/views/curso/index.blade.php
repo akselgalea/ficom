@@ -23,6 +23,7 @@
 
                     <div class="buttons mt-2">
                         <a href="{{route('curso.show', $curso->id)}}" class="btn btn-primary">Ver</a>
+                        <a href="{{ route('curso.pagos.generar', $curso->id)}}" class="btn btn-primary">Informe pagos</a>
                     </div>
                 </div>
             </div>

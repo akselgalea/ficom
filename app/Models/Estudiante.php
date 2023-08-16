@@ -678,6 +678,10 @@ class Estudiante extends Model
 
     public function montoAnual() {
         $totalXMes = $this->getTotalAPagarPorMes();
+        
+        if($totalXMes == 0)
+          return 0;
+
         return ($totalXMes * 12) + $this->costoMatricula();
     }
 }

@@ -66,6 +66,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/cursos/{id}', [CursoController::class, 'show'])->name('curso.show');
         Route::get('/cursos/{id}/editar', [CursoController::class, 'edit'])->name('curso.edit');
         Route::post('/cursos/{id}/editar', [CursoController::class, 'update'])->name('curso.update');
+        Route::get('/cursos/{id}/generar-reporte-pagos', [CursoController::class, 'createReport'])->name('curso.pagos.generar');
     });
     
     Route::group(['middleware' => ['check.role:admin|matriculas']], function () {

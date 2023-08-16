@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\{Curso, Nivel};
+use App\Exports\CursosExport;
 use Exception;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CursoController extends Controller
 {
@@ -43,5 +46,10 @@ class CursoController extends Controller
         if($res['status'] == 400) return redirect()->back()->with('res', $res);
 
         return redirect()->route('beca.index')->with('res', $res); 
+    }
+
+    public function createReport($id) {
+        $curso = $this->curso->find($id);
+        return Excel::download(new CursosExport($id), now() . "-reporte-pagos-" . $curso->curso . "-" . $curso->paralelo . ".xlsx");
     }
 }
