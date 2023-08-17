@@ -22,24 +22,30 @@ class Estudiante extends Model
 
     protected $fillable = [
         'id',
-        'nombres',
         'apellidos',
-        'edad',
+        'nombres',
+        'email',
         'genero',
         'rut',
-        'dv',
-        'email',
-        'prioridad',
-        'email_institucional',
-        'telefono',
-        'direccion',
+        'edad',
+        'fecha_nacimiento',
         'nacionalidad',
         'enfermedades',
         'persona_emergencia',
         'telefono_emergencia',
+        'dv',
         'es_nuevo',
+        'prioridad',
+        'email_institucional',
+        'telefono',
+        'direccion',
+        'apoderados',
         'curso_id',
         'beca_id'
+    ];
+
+    protected $casts = [
+      'apoderados' => 'array'
     ];
 
     /**
@@ -137,9 +143,14 @@ class Estudiante extends Model
             'apellidos' => 'sometimes|required|max:255',
             'apellido_paterno' => 'sometimes|required|max:255',
             'apellido_materno' => 'sometimes|required|max:255',
-            'genero' => Rule::in(['M', 'F', 'N']),
+            'genero' => [Rule::in(['M', 'F', 'N']), 'required'],
+            'edad' => 'required|int',
+            'enfermedades' => 'nullable|string',
+            'persona_emergencia' => 'nullable|string',
+            'telefono_emergencia' => 'nullable|string',
             'nacionalidad' => 'required|string|min:3|max:50',
             'run' => 'required|max:10',
+            'email' => ['required', 'email', Rule::unique('estudiantes')->ignore($id)],
             'email_institucional' => ['sometimes', 'nullable', 'email', Rule::unique('estudiantes')->ignore($id)],
             'nivel' => 'required',
             'prioridad' => 'required',
@@ -182,6 +193,10 @@ class Estudiante extends Model
             'apellido_paterno' => 'apellido paterno',
             'apellido_materno' => 'apellido materno',
             'run',
+            'fecha_nacimiento' => 'fecha de nacimiento',
+            'enfermedades' => 'enfermedades y contraindicaciones',
+            'persona_emergencia' => 'remitir a',
+            'telefono_emergencia' => 'N° Telefónico',
             'genero' => 'género',
             'email_institucional' => 'correo institucional',
             'nivel',
@@ -260,10 +275,10 @@ class Estudiante extends Model
         $hasApoderado = $req->a_nombre != '' || $req->a_rut != '' || $req->a_telefono != '' || $req->a_email != '' || $req->a_direccion != '';
         $hasApoderadoSuplente = $req->sub_nombre != '' || $req->sub_rut != '' || $req->sub_telefono != '' || $req->sub_email != '' || $req->sub_direccion != '';
         $hasMadre = $req->m_nombre != '' || $req->m_rut != '' || $req->m_telefono != '' || $req->m_email != '' || $req->m_direccion != '';
-        $hasPadre = $req->m_nombre != '' || $req->m_rut != '' || $req->m_telefono != '' || $req->m_email != '' || $req->m_direccion != '';
+        $hasPadre = $req->p_nombre != '' || $req->p_rut != '' || $req->p_telefono != '' || $req->p_email != '' || $req->p_direccion != '';
         
         $req->validate(
-            $this->rules($hasApoderado, $hasApoderadoSuplente),
+            $this->rules($hasApoderado, $hasApoderadoSuplente, $hasMadre, $hasPadre),
             $this->messages(),
             $this->attributes()
         );
@@ -283,35 +298,47 @@ class Estudiante extends Model
             $estudiante->edad = $req->edad;
             $estudiante->genero = $req->genero;
             $estudiante->direccion = $req->direccion;
+            $estudiante->nacionalidad = $req->nacionalidad;
             $estudiante->telefono = $req->telefono;
             $estudiante->curso_id = $req->nivel;
             $estudiante->prioridad = $req->prioridad;
             $estudiante->fecha_nacimiento = $req->fecha_nacimiento;
             $estudiante->email = $req->email;
+            $estudiante->enfermedades = $req->enfermedades;
+            $estudiante->persona_emergencia = $req->persona_emergencia;
+            $estudiante->telefono_emergencia = $req->telefono_emergencia;
+            $estudiante->apoderados = [
+              "apoderado_titular" => [
+                "nombre" => $req->a_nombre,
+                "rut" => $req->a_rut,
+                "telefono" => $req->a_telefono,
+                "email" => $req->a_email,
+                "direccion" => $req->a_direccion
+              ],
+              "apoderado_suplente" => [
+                "nombre" => $req->sub_nombre,
+                "rut" => $req->sub_rut,
+                "telefono" => $req->sub_telefono,
+                "email" => $req->sub_email,
+                "direccion" => $req->sub_direccion
+              ],
+              "madre" => [
+                "nombre" => $req->m_nombre,
+                "rut" => $req->m_rut,
+                "telefono" => $req->m_telefono,
+                "email" => $req->m_email,
+                "direccion" => $req->m_direccion
+              ],
+              "padre" => [
+                "nombre" => $req->p_nombre,
+                "rut" => $req->p_rut,
+                "telefono" => $req->p_telefono,
+                "email" => $req->p_email,
+                "direccion" => $req->p_direccion
+              ]
+            ];
+
             $estudiante->save();
-
-            //Apoderado
-            if ($hasApoderado) {
-                $apoderado = new Apoderado();
-                $apoderado->apellidos = $req->a_apellidos;
-                $apoderado->nombres = $req->a_nombres;
-                $apoderado->telefono = $req->a_telefono;
-                $apoderado->email = $req->a_email;
-                $apoderado->direccion = $req->a_direccion;
-
-                $estudiante->apoderados()->save($apoderado);
-            }
-
-            //Apoderado suplente
-            if ($hasApoderadoSuplente) {
-                $apoderado_sub = new Apoderado();
-                $apoderado_sub->apellidos = $req->sub_apellidos;
-                $apoderado_sub->nombres = $req->sub_nombres;
-                $apoderado_sub->telefono = $req->sub_telefono;
-                $apoderado_sub->email = $req->sub_email;
-                $apoderado_sub->direccion = $req->sub_direccion;
-                $estudiante->apoderados()->save($apoderado_sub, ['es_suplente' => true]);
-            }
 
             return ['status' => 200, 'message' => 'Estudiante creado con exito!'];
         } catch (InvalidFormatException $e) {
@@ -330,11 +357,13 @@ class Estudiante extends Model
 
     public function actualizar($id, $request)
     {
-        $hasApoderado = $request->a_nombres != '' || $request->a_apellidos != '' || $request->a_telefono != '' || $request->a_email != '' || $request->a_direccion != '';
-        $hasApoderadoSuplente = $request->sub_nombres != '' || $request->sub_apellidos != '' || $request->sub_telefono != '' || $request->sub_email != '' || $request->sub_direccion != '';
-
+        $hasApoderado = $request->a_nombre != '' || $request->a_rut != '' || $request->a_telefono != '' || $request->a_email != '' || $request->a_direccion != '';
+        $hasApoderadoSuplente = $request->sub_nombre != '' || $request->sub_rut != '' || $request->sub_telefono != '' || $request->sub_email != '' || $request->sub_direccion != '';
+        $hasMadre = $request->m_nombre != '' || $request->m_rut != '' || $request->m_telefono != '' || $request->m_email != '' || $request->m_direccion != '';
+        $hasPadre = $request->p_nombre != '' || $request->p_rut != '' || $request->p_telefono != '' || $request->p_email != '' || $request->p_direccion != '';
+        
         $request->validate(
-            $this->rules($hasApoderado, $hasApoderadoSuplente, $id),
+            $this->rules($hasApoderado, $hasApoderadoSuplente, $hasMadre, $hasPadre, $id),
             $this->messages(),
             $this->attributes()
         );
@@ -349,52 +378,50 @@ class Estudiante extends Model
             $estudiante->nombres = $request->nombres;
             $estudiante->rut = $rut[0];
             $estudiante->dv = $rut[1];
-            $estudiante->email_institucional = $request->email_institucional;
             $estudiante->prioridad = $request->prioridad;
             if ($estudiante->prioridad == 'prioritario') $estudiante->beca()->dissociate();
             $estudiante->curso_id = $request->nivel;
-            $estudiante->telefono = $request->a_telefono;
-            $estudiante->direccion = $request->a_direccion;
+            $estudiante->edad = $request->edad;
+            $estudiante->genero = $request->genero;
+            $estudiante->nacionalidad = $request->nacionalidad;
+            $estudiante->direccion = $request->direccion;
+            $estudiante->telefono = $request->telefono;
+            $estudiante->fecha_nacimiento = $request->fecha_nacimiento;
+            $estudiante->email = $request->email;
+            $estudiante->enfermedades = $request->enfermedades;
+            $estudiante->persona_emergencia = $request->persona_emergencia;
+            $estudiante->telefono_emergencia = $request->telefono_emergencia;
             
-            if($hasApoderado) {
-                if(!$estudiante->hasApoderadoTitular()) {
-                    $apoderado = new Apoderado();
-                    $apoderado->nombres = $request->a_nombres;
-                    $apoderado->apellidos = $request->a_apellidos;
-                    $apoderado->telefono = $request->a_telefono;
-                    $apoderado->email = $request->a_email;
-                    $apoderado->direccion = $request->a_direccion;
-                    $estudiante->apoderados()->save($apoderado);
-                } else {
-                    $estudiante->apoderadoTitular()->update([
-                        'apellidos' => $request->a_apellidos,
-                        'nombres' => $request->a_nombres,
-                        'telefono' => $request->a_telefono,
-                        'email' => $request->a_email,
-                        'direccion' => $request->a_direccion,
-                    ]);
-                }
-            }
-
-            if($hasApoderadoSuplente) {
-                if (!$estudiante->hasApoderadoSuplente()) {
-                    $apoderado = new Apoderado();
-                    $apoderado->apellidos = $request->sub_apellidos;
-                    $apoderado->nombres = $request->sub_nombres;
-                    $apoderado->telefono = $request->sub_telefono;
-                    $apoderado->email = $request->sub_email;
-                    $apoderado->direccion = $request->sub_direccion;
-                    $estudiante->apoderados()->save($apoderado, ['es_suplente' => true]);
-                } else {
-                    $estudiante->apoderadoSuplente()->update([
-                        'apellidos' => $request->sub_apellidos,
-                        'nombres' => $request->sub_nombres,
-                        'telefono' => $request->sub_telefono,
-                        'email' => $request->sub_email,
-                        'direccion' => $request->sub_direccion,
-                    ]);
-                }
-            }
+            $estudiante->apoderados = [
+              "apoderado_titular" => [
+                "nombre" => $request->a_nombre,
+                "rut" => $request->a_rut,
+                "telefono" => $request->a_telefono,
+                "email" => $request->a_email,
+                "direccion" => $request->a_direccion
+              ],
+              "apoderado_suplente" => [
+                "nombre" => $request->sub_nombre,
+                "rut" => $request->sub_rut,
+                "telefono" => $request->sub_telefono,
+                "email" => $request->sub_email,
+                "direccion" => $request->sub_direccion
+              ],
+              "madre" => [
+                "nombre" => $request->m_nombre,
+                "rut" => $request->m_rut,
+                "telefono" => $request->m_telefono,
+                "email" => $request->m_email,
+                "direccion" => $request->m_direccion
+              ],
+              "padre" => [
+                "nombre" => $request->p_nombre,
+                "rut" => $request->p_rut,
+                "telefono" => $request->p_telefono,
+                "email" => $request->p_email,
+                "direccion" => $request->p_direccion
+              ]
+            ];
 
             $estudiante->save();
             return ['status' => 200, 'message' => 'Estudiante actualizado con exito!'];

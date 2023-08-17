@@ -18,11 +18,11 @@
                     <td class="text-center">NIVEL</td>
                 </tr>
                 <tr>
-                    <td colspan="6">Nombre Apoderado: {{ $estudiante->apoderado_titular ? $estudiante->apoderado_titular->nombres . ' ' . $estudiante->apoderado_titular->apellidos : '' }}</td>
+                    <td colspan="6">Nombre Apoderado: {{ $estudiante->apoderados['apoderado_titular']['nombre'] ?? '' }}</td>
                 </tr>
                 <tr>
-                    <td colspan="2">Teléfono: {{ $estudiante->apoderado_titular ? $estudiante->apoderado_titular->telefono : '' }}</td>
-                    <td colspan="4">Correo Electrónico: {{ $estudiante->apoderado_titular ? $estudiante->apoderado_titular->email : '' }}</td>
+                    <td colspan="2">Teléfono: {{ $estudiante->apoderados['apoderado_titular']['telefono'] ?? '' }}</td>
+                    <td colspan="4">Correo Electrónico: {{ $estudiante->apoderados['apoderado_titular']['email'] ?? '' }}</td>
                 </tr>
             </tbody>
         </table>

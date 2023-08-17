@@ -1,4 +1,4 @@
-<header class="mb-5">
+<header class="mb-5 header-estudiante">
   <img height="120px" src="{{ asset('img/escudo.png') }}" alt="escudo colegio simon bolivar">
   <div class="text-center">
     <h2>Pre-Matrícula {{ now()->year }}</h2>

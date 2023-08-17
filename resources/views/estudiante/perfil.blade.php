@@ -1,19 +1,19 @@
 @extends('layouts.app')
 @section('content')
 
-@php
-    $hAT = $estudiante->hasApoderadoTitular();  //hasApoderadoTitular
-    $hAS = $estudiante->hasApoderadoSuplente(); //hasApoderadoSuplente
-@endphp
-
-<div class="container card">
+<div class="container card" style="max-width: 1080px">
     <div class="buttons mb-4">
         <a href="{{ route('estudiante.pagos', $estudiante->id) }}" class="btn btn-primary">Ver historial de pago</a>
         <a href="{{ route('estudiante.beca.edit', $estudiante->id) }}" class="btn btn-primary">Administrar beca</a>
     </div>
-
+    
+    
     <form method="POST" action="{{route('estudiante.update', $estudiante->id)}}" class="mt-3">
         @csrf
+        <div class="header-estudiante">
+          @include('estudiante.partials.matricula.preMatriculaHeader')
+        </div>
+
         <fieldset class="row">
             <h2>Estudiante</h2>
 
@@ -23,12 +23,7 @@
 
         <fieldset class="row">
             <div class="apoderado-title mt-3 mb-1">
-                <h2>Apoderado</h2>
-                @if($hAT)
-                <div>
-                    <button type="button" class="btn btn-sm btn-danger del" onclick="deleteSubmit('deleteApoderado')">Eliminar</button>
-                </div>
-                @endif
+              <h2>Apoderado</h2>
             </div>
 
             @include('estudiante.partials.perfil.apoderadoTitular')
@@ -37,14 +32,25 @@
         <fieldset class="row">
             <div class="apoderado-title mt-3 mb-1">
                 <h2>Apoderado suplente</h2>
-                @if($hAS)
-                <div>
-                    <button type="button" class="btn btn-sm btn-danger del" onclick="deleteSubmit('deleteApoderadoSuplente')">Eliminar</button>
-                </div>
-                @endif
             </div>
             
             @include('estudiante.partials.perfil.apoderadoSuplente')
+        </fieldset>
+
+        <fieldset class="row">
+          <div class="apoderado-title mt-3 mb-1">
+              <h2>Madre</h2>
+          </div>
+          
+          @include('estudiante.partials.perfil.madre')
+        </fieldset>
+
+        <fieldset class="row">
+          <div class="apoderado-title mt-3 mb-1">
+              <h2>Padre</h2>
+          </div>
+          
+          @include('estudiante.partials.perfil.padre')
         </fieldset>
 
         @if(auth()->user()->hasAnyRole('admin', 'matriculas'))
@@ -54,21 +60,11 @@
                 <button type="submit" id="btn-enviar" class="btn btn-primary" hidden>Guardar</button>
             </div>
         @endif
-    </form>
-
-    @if($hAT)
-    <form method="post" action="{{route('estudiante.apoderado.remove', ['id' => $estudiante->id, 'apoderado' => $estudiante->apoderado_titular->id])}}" id="deleteApoderado">
-        @method('delete')
-        @csrf
-    </form>
-    @endif
-
-    @if($hAS)
-    <form method="post" action="{{route('estudiante.apoderado.remove', ['id' => $estudiante->id, 'apoderado' => $estudiante->apoderado_suplente->id])}}" id="deleteApoderadoSuplente">
-        @method('delete')
-        @csrf
-    </form>
-    @endif
+        
+        <div class="footer-estudiante">
+          @include('estudiante.partials.matricula.preMatriculaFooter')
+        </div>
+      </form>
 </div>
 @endsection
 
@@ -78,36 +74,66 @@
         const cancelar = document.getElementById('btn-cancelar');
         const enviar = document.getElementById('btn-enviar');
         const deleteBtns = document.getElementsByClassName('del');
+        const header = document.querySelector('.header-estudiante');
+        const footer = document.querySelector('.footer-estudiante');
+
+        header.style.display = "none";
+        footer.style.display = "none";
     
         for(let btn of deleteBtns) btn.hidden = true;
 
         //Estudiante
-        const apellidos = document.getElementById('apellidos');
         const nombres = document.getElementById('nombres');
+        const apellidos = document.getElementById('apellidos');
         const run = document.getElementById('run');
-        const email_institucional = document.getElementById('email_institucional');
+        const email = document.getElementById('email');
+        const edad = document.getElementById('edad');
+        const fecha_nacimiento = document.getElementById('fecha_nacimiento');
+        const genero = document.getElementById('genero');
+        const nacionalidad = document.getElementById('nacionalidad');
+        const direccion = document.getElementById('direccion');
+        const enfermedades = document.getElementById('enfermedades');
+        const persona_emergencia = document.getElementById('persona_emergencia');
+        const telefono_emergencia = document.getElementById('telefono_emergencia');
         const nivel = document.getElementById('nivel');
         const prioridad = document.getElementById('prioridad');
         
         //Apoderado
-        const a_nombres = document.getElementById('a_nombres');
-        const a_apellidos = document.getElementById('a_apellidos');
+        const a_nombre = document.getElementById('a_nombre');
+        const a_rut = document.getElementById('a_rut');
         const a_telefono = document.getElementById('a_telefono');
         const a_email = document.getElementById('a_email');
         const a_direccion = document.getElementById('a_direccion');
         
         //Apoderado suplente
-        const sub_nombres = document.getElementById('sub_nombres');
-        const sub_apellidos = document.getElementById('sub_apellidos');
+        const sub_nombre = document.getElementById('sub_nombre');
+        const sub_rut = document.getElementById('sub_rut');
         const sub_telefono = document.getElementById('sub_telefono');
         const sub_email = document.getElementById('sub_email');
         const sub_direccion = document.getElementById('sub_direccion');
+
+        //Madre
+        const m_nombre = document.getElementById('m_nombre');
+        const m_rut = document.getElementById('m_rut');
+        const m_telefono = document.getElementById('m_telefono');
+        const m_email = document.getElementById('m_email');
+        const m_direccion = document.getElementById('m_direccion');
+
+        //Padre
+        const p_nombre = document.getElementById('p_nombre');
+        const p_rut = document.getElementById('p_rut');
+        const p_telefono = document.getElementById('p_telefono');
+        const p_email = document.getElementById('p_email');
+        const p_direccion = document.getElementById('p_direccion');
         
         function editar() {
             for(let btn of deleteBtns) btn.hidden = false;
             btneditar.hidden = true;
             cancelar.hidden = false;
             enviar.hidden = false;
+
+            header.style.display = "block";
+            footer.style.display = "block";
             enableInput();
         }
 
@@ -116,6 +142,9 @@
             btneditar.hidden = false;
             cancelar.hidden = true;
             enviar.hidden = true;
+
+            header.style.display = "none";
+            footer.style.display = "none";
             disableInput();
         }
 
@@ -123,42 +152,82 @@
             apellidos.disabled = false;
             nombres.disabled = false;
             run.disabled = false;
-            email_institucional.disabled = false;
+            email.disabled = false;
+            edad.disabled = false;
+            fecha_nacimiento.disabled = false;
+            genero.disabled = false;
+            nacionalidad.disabled = false;
+            direccion.disabled = false;
+            enfermedades.disabled = false;
+            persona_emergencia.disabled = false;
+            telefono_emergencia.disabled = false;
             nivel.disabled = false;
             prioridad.disabled = false;
             
-            a_nombres.disabled = false;
-            a_apellidos.disabled = false;
+            a_nombre.disabled = false;
+            a_rut.disabled = false;
             a_telefono.disabled = false;
             a_email.disabled = false;
             a_direccion.disabled = false;
             
-            sub_nombres.disabled = false;
-            sub_apellidos.disabled = false;
+            sub_nombre.disabled = false;
+            sub_rut.disabled = false;
             sub_telefono.disabled = false;
             sub_email.disabled = false;
             sub_direccion.disabled = false;
+
+            m_nombre.disabled = false;
+            m_rut.disabled = false;
+            m_telefono.disabled = false;
+            m_email.disabled = false;
+            m_direccion.disabled = false;
+
+            p_nombre.disabled = false;
+            p_rut.disabled = false;
+            p_telefono.disabled = false;
+            p_email.disabled = false;
+            p_direccion.disabled = false;
         }
 
         function disableInput() {
             apellidos.disabled = true;
             nombres.disabled = true;
             run.disabled = true;
-            email_institucional.disabled = true;
+            email.disabled = true;
+            edad.disabled = true;
+            fecha_nacimiento.disabled = false;
+            genero.disabled = true;
+            nacionalidad.disabled = true;
+            direccion.disabled = true;
+            enfermedad.disabled = true;
+            persona_emergencia.disabled = true;
+            telefono_emergencia.disabled = true;
             nivel.disabled = true;
             prioridad.disabled = true;
 
-            a_nombres.disabled = true;
-            a_apellidos.disabled = true;
+            a_nombre.disabled = true;
+            a_rut.disabled = true;
             a_telefono.disabled = true;
             a_email.disabled = true;
             a_direccion.disabled = true;
 
-            sub_nombres.disabled = true;
-            sub_apellidos.disabled = true;
+            sub_nombre.disabled = true;
+            sub_rut.disabled = true;
             sub_telefono.disabled = true;
             sub_email.disabled = true;
             sub_direccion.disabled = true;
+
+            m_nombre.disabled = true;
+            m_rut.disabled = true;
+            m_telefono.disabled = true;
+            m_email.disabled = true;
+            m_direccion.disabled = true;
+
+            p_nombre.disabled = true;
+            p_rut.disabled = true;
+            p_telefono.disabled = true;
+            p_email.disabled = true;
+            p_direccion.disabled = true;
         }
     </script>
 

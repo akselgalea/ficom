@@ -6,7 +6,7 @@
 @endphp
         
 <div class="container pre-matricula card form-container">
-  <form method="post" action="{{ route('api.estudiante.create.pdf') }}" id="estudianteStore" class="mt-3 row">
+  <form method="post" action="{{ route('estudiante.store') }}" id="estudianteStore" class="mt-3 row">
     @csrf
       <div id="documento" class="p-2">
         @include('estudiante.partials.matricula.preMatriculaHeader')
@@ -37,14 +37,6 @@
   const boton = document.getElementById('btnGenDoc');
   boton.addEventListener('click', () => {
     window.print();
-  })
-</script>
-<script>
-  const form = document.getElementById('estudianteStore');
-
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    
   })
 </script>
 @endpush
