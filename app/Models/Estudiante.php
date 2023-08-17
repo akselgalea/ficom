@@ -24,13 +24,19 @@ class Estudiante extends Model
         'id',
         'nombres',
         'apellidos',
+        'edad',
         'genero',
         'rut',
         'dv',
+        'email',
         'prioridad',
         'email_institucional',
         'telefono',
         'direccion',
+        'nacionalidad',
+        'enfermedades',
+        'persona_emergencia',
+        'telefono_emergencia',
         'es_nuevo',
         'curso_id',
         'beca_id'
@@ -125,26 +131,38 @@ class Estudiante extends Model
         ];
     }
 
-    private function rules($hasApoderado, $hasApoderadoSuplente, $id = null): array {
+    private function rules($hasApoderado, $hasApoderadoSuplente, $hasMadre, $hasPadre, $id = null): array {
         return [
             'nombres' => 'required|max:255',
             'apellidos' => 'sometimes|required|max:255',
             'apellido_paterno' => 'sometimes|required|max:255',
             'apellido_materno' => 'sometimes|required|max:255',
+            'genero' => Rule::in(['M', 'F', 'N']),
+            'nacionalidad' => 'required|string|min:3|max:50',
             'run' => 'required|max:10',
             'email_institucional' => ['sometimes', 'nullable', 'email', Rule::unique('estudiantes')->ignore($id)],
             'nivel' => 'required',
             'prioridad' => 'required',
-            'a_nombres' => Rule::requiredIf($hasApoderado),
-            'a_apellidos' => Rule::requiredIf($hasApoderado),
+            'a_nombre' => Rule::requiredIf($hasApoderado),
+            'a_rut' => Rule::requiredIf($hasApoderado),
             'a_telefono' => [Rule::requiredIf($hasApoderado), 'min:8', 'max:12', 'nullable'],
             'a_email' => [Rule::requiredIf($hasApoderado), 'email', 'nullable'],
             'a_direccion' => Rule::requiredIf($hasApoderado),
-            'sub_nombres' => Rule::requiredIf($hasApoderadoSuplente),
-            'sub_apellidos' => Rule::requiredIf($hasApoderadoSuplente),
+            'sub_nombre' => Rule::requiredIf($hasApoderadoSuplente),
+            'sub_rut' => Rule::requiredIf($hasApoderadoSuplente),
             'sub_telefono' => [Rule::requiredIf($hasApoderadoSuplente), 'min:8', 'max:12', 'nullable'],
             'sub_email' => [Rule::requiredIf($hasApoderadoSuplente), 'email', 'nullable'],
-            'sub_direccion' => Rule::requiredIf($hasApoderadoSuplente)
+            'sub_direccion' => Rule::requiredIf($hasApoderadoSuplente),
+            'm_nombre' => Rule::requiredIf($hasMadre),
+            'm_rut' => Rule::requiredIf($hasMadre),
+            'm_telefono' => [Rule::requiredIf($hasMadre), 'min:8', 'max:12', 'nullable'],
+            'm_email' => [Rule::requiredIf($hasMadre), 'email', 'nullable'],
+            'm_direccion' => Rule::requiredIf($hasMadre),
+            'p_nombre' => Rule::requiredIf($hasPadre),
+            'p_rut' => Rule::requiredIf($hasPadre),
+            'p_telefono' => [Rule::requiredIf($hasPadre), 'min:8', 'max:12', 'nullable'],
+            'p_email' => [Rule::requiredIf($hasPadre), 'email', 'nullable'],
+            'p_direccion' => Rule::requiredIf($hasPadre)
         ];
     }
 
@@ -164,19 +182,30 @@ class Estudiante extends Model
             'apellido_paterno' => 'apellido paterno',
             'apellido_materno' => 'apellido materno',
             'run',
+            'genero' => 'género',
             'email_institucional' => 'correo institucional',
             'nivel',
             'prioridad',
-            'a_nombres' => 'nombres',
-            'a_apellidos' => 'apellidos',
+            'a_nombre' => 'nombre',
+            'a_rut' => 'rut',
             'a_telefono' => 'telefono',
             'a_email' => 'email',
             'a_direccion' => 'direccion',
-            'sub_nombres' => 'nombres',
-            'sub_apellidos' => 'apellidos',
+            'sub_nombre' => 'nombre',
+            'sub_rut' => 'rut',
             'sub_telefono' => 'telefono',
             'sub_email' => 'email',
-            'sub_direccion' => 'direccion'
+            'sub_direccion' => 'direccion',
+            'm_nombre' => 'nombre',
+            'm_rut' => 'rut',
+            'm_telefono' => 'telefono',
+            'm_email' => 'email',
+            'm_direccion' => 'direccion',
+            'p_nombre' => 'nombre',
+            'p_rut' => 'rut',
+            'p_telefono' => 'telefono',
+            'p_email' => 'email',
+            'p_direccion' => 'direccion'
         ];
     }
 
@@ -228,9 +257,11 @@ class Estudiante extends Model
 
     public function store($req)
     {
-        $hasApoderado = $req->a_nombres != '' || $req->a_apellidos != '' || $req->a_telefono != '' || $req->a_email != '' || $req->a_direccion != '';
-        $hasApoderadoSuplente = $req->sub_nombres != '' || $req->sub_apellidos != '' || $req->sub_telefono != '' || $req->sub_email != '' || $req->sub_direccion != '';
-
+        $hasApoderado = $req->a_nombre != '' || $req->a_rut != '' || $req->a_telefono != '' || $req->a_email != '' || $req->a_direccion != '';
+        $hasApoderadoSuplente = $req->sub_nombre != '' || $req->sub_rut != '' || $req->sub_telefono != '' || $req->sub_email != '' || $req->sub_direccion != '';
+        $hasMadre = $req->m_nombre != '' || $req->m_rut != '' || $req->m_telefono != '' || $req->m_email != '' || $req->m_direccion != '';
+        $hasPadre = $req->m_nombre != '' || $req->m_rut != '' || $req->m_telefono != '' || $req->m_email != '' || $req->m_direccion != '';
+        
         $req->validate(
             $this->rules($hasApoderado, $hasApoderadoSuplente),
             $this->messages(),
@@ -249,10 +280,14 @@ class Estudiante extends Model
             $estudiante->rut = $rut[0];
             $estudiante->dv = $rut[1];
             $estudiante->es_nuevo = 1;
+            $estudiante->edad = $req->edad;
+            $estudiante->genero = $req->genero;
             $estudiante->direccion = $req->direccion;
             $estudiante->telefono = $req->telefono;
             $estudiante->curso_id = $req->nivel;
             $estudiante->prioridad = $req->prioridad;
+            $estudiante->fecha_nacimiento = $req->fecha_nacimiento;
+            $estudiante->email = $req->email;
             $estudiante->save();
 
             //Apoderado

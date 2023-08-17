@@ -11,6 +11,7 @@
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="icon"href="{{asset('favicon.png')}}">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
     <!-- Scripts -->
@@ -18,10 +19,10 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <nav id="navegador-top" class="navbar navbar-expand-md navbar-light shadow-sm navegador-principal">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+                    <img height="60px" src="{{ asset('img/logo.png') }}" />
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -91,7 +92,7 @@
             </div>
         </nav>
 
-        <main class="py-4">
+        <main class="py-4 main-container">
             {{-- Mensajes de alerta de las respuestas del controlador --}}
             @php if(session('res')) $res = session('res'); @endphp
             
@@ -122,14 +123,19 @@
 
             @yield('content')
         </main>
-        @stack('scripts')
-        <script>
-            //Activa los tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            })
-        </script>
     </div>
+
+    <footer class="footer">
+      © Copyright Colegio Simón Bolívar
+    </footer>
+
+    @stack('scripts')
+    <script>
+        //Activa los tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
 </body>
 </html>

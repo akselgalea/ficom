@@ -6,7 +6,7 @@
     $hAS = $estudiante->hasApoderadoSuplente(); //hasApoderadoSuplente
 @endphp
 
-<div class="container">
+<div class="container card">
     <div class="buttons mb-4">
         <a href="{{ route('estudiante.pagos', $estudiante->id) }}" class="btn btn-primary">Ver historial de pago</a>
         <a href="{{ route('estudiante.beca.edit', $estudiante->id) }}" class="btn btn-primary">Administrar beca</a>

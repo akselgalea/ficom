@@ -19,3 +19,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('/estudiantes/crear/pdf', [EstudianteController::class, 'transformToPDF'])->name('api.estudiante.create.pdf');

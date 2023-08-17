@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-    <div class="container">
+    <div class="container card">
         <h2 class="mb-3">Cursos</h2>
         
         @if(auth()->user()->hasAnyRole('contabilidad', 'admin'))

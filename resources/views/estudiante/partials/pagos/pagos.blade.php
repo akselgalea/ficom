@@ -1,4 +1,5 @@
-<div class="container mt-3">
+<div class="container card mt-3">
+    <h2 class="mb-3">Pagos</h2>
     <div class="tabla-pagos-container">
         <table class="tabla-pagos table table-bordered border-dark">
             <tbody>

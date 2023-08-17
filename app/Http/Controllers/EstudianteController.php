@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Dompdf\Dompdf;
 
 class EstudianteController extends Controller
 {
@@ -128,6 +129,19 @@ class EstudianteController extends Controller
 
     public function apoderadoRemove($id, $apoderado) {
         return $this->estud->apoderadoRemove($id, $apoderado);
+    }
+
+    public function transformToPDF(Request $req) {
+      $dompdf = new Dompdf();
+      $dompdf->loadHtml($req->pdf);
+      // (Optional) Setup the paper size and orientation
+      $dompdf->setPaper('A4', 'landscape');
+
+      // Render the HTML as PDF
+      $dompdf->render();
+
+      // Output the generated PDF to Browser
+      return $dompdf->stream();
     }
 
     

@@ -3,7 +3,7 @@
     if(isset($res)) exit();
 @endphp
 @section('content')
-    <div class="container">
+    <div class="container card">
         <h2 class="mb-3">Becas</h2>
         
         @if(auth()->user()->hasAnyRole('contabilidad', 'admin'))
