@@ -2,7 +2,7 @@
 @section('content')
 
 <div class="container card" style="max-width: 1080px">
-    <div class="buttons mb-4">
+    <div class="buttons botones-formulario mb-4">
         <a href="{{ route('estudiante.pagos', $estudiante->id) }}" class="btn btn-primary">Ver historial de pago</a>
         <a href="{{ route('estudiante.beca.edit', $estudiante->id) }}" class="btn btn-primary">Administrar beca</a>
     </div>
@@ -52,35 +52,35 @@
           
           @include('estudiante.partials.perfil.padre')
         </fieldset>
-
-        @if(auth()->user()->hasAnyRole('admin', 'matriculas'))
-            <div class="buttons">
-                <button type="button" id="btn-editar" class="btn btn-secondary" onclick="editar()">Editar</button>
-                <button type="button" id="btn-cancelar" class="btn btn-danger" onclick="cancelEditar()" hidden>Cancelar</button>
-                <button type="submit" id="btn-enviar" class="btn btn-primary" hidden>Guardar</button>
-            </div>
-        @endif
         
         <div class="footer-estudiante">
           @include('estudiante.partials.matricula.preMatriculaFooter')
         </div>
+
+        @if(auth()->user()->hasAnyRole('admin', 'matriculas'))
+            <div class="buttons botones-formulario">
+                <button type="button" id="btn-editar" class="btn btn-secondary" onclick="editar()">Editar</button>
+                <button type="button" id="btn-cancelar" class="btn btn-danger" onclick="cancelEditar()" hidden>Cancelar</button>
+                <button type="button" id="btnGenDoc" class="btn btn-secondary" hidden>Generar documento</button>
+                <button type="submit" id="btn-enviar" class="btn btn-primary" hidden>Guardar</button>
+            </div>
+        @endif
+        
       </form>
 </div>
 @endsection
 
 @push('scripts')
     <script>
+        const btnGen = document.getElementById('btnGenDoc');
         const btneditar = document.getElementById('btn-editar');
         const cancelar = document.getElementById('btn-cancelar');
         const enviar = document.getElementById('btn-enviar');
-        const deleteBtns = document.getElementsByClassName('del');
         const header = document.querySelector('.header-estudiante');
         const footer = document.querySelector('.footer-estudiante');
 
         header.style.display = "none";
         footer.style.display = "none";
-    
-        for(let btn of deleteBtns) btn.hidden = true;
 
         //Estudiante
         const nombres = document.getElementById('nombres');
@@ -126,11 +126,15 @@
         const p_email = document.getElementById('p_email');
         const p_direccion = document.getElementById('p_direccion');
         
+        btnGen.addEventListener('click', () => {
+          window.print();
+        });
+
         function editar() {
-            for(let btn of deleteBtns) btn.hidden = false;
             btneditar.hidden = true;
             cancelar.hidden = false;
             enviar.hidden = false;
+            btnGen.hidden = false;
 
             header.style.display = "block";
             footer.style.display = "block";
@@ -138,10 +142,10 @@
         }
 
         function cancelEditar() {
-            for(let btn of deleteBtns) btn.hidden = true;
             btneditar.hidden = false;
             cancelar.hidden = true;
             enviar.hidden = true;
+            btnGen.hidden = true;
 
             header.style.display = "none";
             footer.style.display = "none";
