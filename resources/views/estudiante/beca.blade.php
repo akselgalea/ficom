@@ -35,25 +35,29 @@
 
     <div class="row my-3">
         <h2>Asignar beca</h2>
-        @foreach($becas as $beca)
-        <div class="col-4 mb-3">
-            <div class="card beca">
-                <div>
-                    <div class="nombre">{{ $beca->nombre }}</div>
-                    <div class="descuento"><b>Descuento:</b> {{ $beca->descuento }}%</div>
-                    <div class="descripcion"><b>Descripción:</b> {{ $beca->descripcion }}</div>
-                </div>
+        @if(count($becas) == 0)
+          <h4>No hay becas disponibles</h4>
+        @else
+          @foreach($becas as $beca)
+          <div class="col-4 mb-3">
+              <div class="card beca">
+                  <div>
+                      <div class="nombre">{{ $beca->nombre }}</div>
+                      <div class="descuento"><b>Descuento:</b> {{ $beca->descuento }}%</div>
+                      <div class="descripcion"><b>Descripción:</b> {{ $beca->descripcion }}</div>
+                  </div>
 
-                <div class="buttons mt-2">
-                    <form action="{{route('estudiante.beca.update', $estudiante->id)}}" method="post">
-                        @csrf
-                        <input type="hidden" name="beca_id" value="{{$beca->id}}">
-                        <button type="submit" class="btn btn-primary" @disabled(!is_null($estudiante->beca) && $estudiante->beca->id == $beca->id)>Asignar beca</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        @endforeach
+                  <div class="buttons mt-2">
+                      <form action="{{route('estudiante.beca.update', $estudiante->id)}}" method="post">
+                          @csrf
+                          <input type="hidden" name="beca_id" value="{{$beca->id}}">
+                          <button type="submit" class="btn btn-primary" @disabled(!is_null($estudiante->beca) && $estudiante->beca->id == $beca->id)>Asignar beca</button>
+                      </form>
+                  </div>
+              </div>
+          </div>
+          @endforeach
+        @endif
     </div>
 </div>
 @endsection
