@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
-use Dompdf\Dompdf;
+use Inertia\Inertia;
 
 class EstudianteController extends Controller
 {
@@ -45,7 +45,15 @@ class EstudianteController extends Controller
      */
     public function show($id)
     {
-        return view('estudiante.perfil', $this->estud->show($id));
+        Inertia::setRootView('layouts.inertia');
+        $estudiante = $this->estud->findOrFail($id);
+        $estudiante->nivel = $estudiante->curso_id;
+        $apellidos = explode(' ', $estudiante->apellidos);
+        $estudiante->apellido_paterno = $apellidos[0];
+        $estudiante->apellido_materno = $apellidos[1] ?? '';
+        $estudiante->run = $estudiante->rut . '-' . $estudiante->dv;   
+
+        return Inertia::render('Estudiante/Actualizar', ['cursos' => Curso::all(), 'estudiante' => $estudiante]);
     }
 
     public function getEstudiantesNuevos(Request $req) {
@@ -60,7 +68,8 @@ class EstudianteController extends Controller
      */
     public function create(Request $req)
     {
-        return view('estudiante.crear', ['cursos' => Curso::all()]);
+        Inertia::setRootView('layouts.inertia'); 
+        return Inertia::render('Estudiante/Crear', ['cursos' => Curso::all()]);
     }
 
     /**
@@ -70,7 +79,8 @@ class EstudianteController extends Controller
      */
     public function edit($id)
     {
-        return view('estudiante.editar');
+        $estudiante = $this->estud->findOrFail($id);
+        return Inertia::render('Estudiante/Actualizar', ['cursos' => Curso::all(), 'estudiante' => $estudiante]);
     }
 
     /**
@@ -150,7 +160,7 @@ class EstudianteController extends Controller
                 $file = $request->file('file');
                 $a = Storage::disk('local')->put('docs',$file);
                 $process = new Process([
-                    'python3', // para linux
+                    'python', // para linux
                     //'python', //para windows
                     storage_path('app/xml/dataConverter.py'),
                     storage_path('app/'.$a)
@@ -168,7 +178,7 @@ class EstudianteController extends Controller
                 $file = $request->file('file');
                 $a = Storage::disk('local')->put('docs',$file);
                 $process = new Process([
-                    'python3', // para linux
+                    'python', // para linux
                     //'python', //para windows
                     storage_path('app/xml/dataConverter2.py'),
                     storage_path('app/'.$a)

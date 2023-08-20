@@ -28,8 +28,8 @@ class EstudiantesExport implements FromView
         }
         
         else {
-            $estudiantes = Estudiante::all();
-
+            $estudiantes = Estudiante::withTrashed()->get();
+            
             foreach($estudiantes as $estudiante) {
                 array_push($registros, $estudiante->registrosFicom($this->year));
             }

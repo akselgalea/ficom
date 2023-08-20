@@ -8,7 +8,7 @@
 <div class="container pre-matricula card form-container">
   <form method="post" action="{{ route('estudiante.store') }}" id="estudianteStore" class="mt-3 row">
     @csrf
-      <div id="documento" class="p-2">
+      <div class="documento" class="p-2">
         @include('estudiante.partials.matricula.preMatriculaHeader')
 
         @include('estudiante.partials.matricula.formEstudiante')
@@ -20,6 +20,8 @@
         @include('estudiante.partials.matricula.formMadre')
 
         @include('estudiante.partials.matricula.formPadre')
+
+        @include('estudiante.partials.matricula.formSuplentes')
 
         @include('estudiante.partials.matricula.preMatriculaFooter')
       </div>
@@ -35,6 +37,20 @@
 @push('scripts')
 <script>
   const boton = document.getElementById('btnGenDoc');
+  const formulario = document.getElementById('estudianteStore');
+
+  formulario.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const formData = new FormData(formulario);
+    
+    formulario.submit();
+  });
+  
+  formulario.addEventListener('formdata', (event) => {
+    const formData = event.formData;
+    formData.set('suplentes', JSON.stringify(suplentes));
+  })
+
   boton.addEventListener('click', () => {
     window.print();
   })

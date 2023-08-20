@@ -8,7 +8,7 @@
     </div>
     
     
-    <form method="POST" action="{{route('estudiante.update', $estudiante->id)}}" class="mt-3">
+    <form method="POST" action="{{route('estudiante.update', $estudiante->id)}}" class="mt-3 documento">
         @csrf
         <div class="header-estudiante">
           @include('estudiante.partials.matricula.preMatriculaHeader')

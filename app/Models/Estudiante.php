@@ -13,10 +13,11 @@ use Freshwork\ChileanBundle\Rut;
 use Exception;
 use Illuminate\Validation\Rule;
 use App\Mail\RecordatorioPago;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Estudiante extends Model
 {
-    use HasFactory;
+    use SoftDeletes, HasFactory;
 
     protected $table = 'estudiantes';
 
@@ -138,43 +139,51 @@ class Estudiante extends Model
     }
 
     private function rules($hasApoderado, $hasApoderadoSuplente, $hasMadre, $hasPadre, $id = null): array {
-        return [
-            'nombres' => 'required|max:255',
-            'apellidos' => 'sometimes|required|max:255',
-            'apellido_paterno' => 'sometimes|required|max:255',
-            'apellido_materno' => 'sometimes|required|max:255',
-            'genero' => [Rule::in(['M', 'F', 'N']), 'required'],
-            'edad' => 'required|int',
-            'enfermedades' => 'nullable|string',
-            'persona_emergencia' => 'nullable|string',
-            'telefono_emergencia' => 'nullable|string',
-            'nacionalidad' => 'required|string|min:3|max:50',
-            'run' => 'required|max:10',
-            'email' => ['required', 'email', Rule::unique('estudiantes')->ignore($id)],
-            'email_institucional' => ['sometimes', 'nullable', 'email', Rule::unique('estudiantes')->ignore($id)],
-            'nivel' => 'required',
-            'prioridad' => 'required',
-            'a_nombre' => Rule::requiredIf($hasApoderado),
-            'a_rut' => Rule::requiredIf($hasApoderado),
-            'a_telefono' => [Rule::requiredIf($hasApoderado), 'min:8', 'max:12', 'nullable'],
-            'a_email' => [Rule::requiredIf($hasApoderado), 'email', 'nullable'],
-            'a_direccion' => Rule::requiredIf($hasApoderado),
-            'sub_nombre' => Rule::requiredIf($hasApoderadoSuplente),
-            'sub_rut' => Rule::requiredIf($hasApoderadoSuplente),
-            'sub_telefono' => [Rule::requiredIf($hasApoderadoSuplente), 'min:8', 'max:12', 'nullable'],
-            'sub_email' => [Rule::requiredIf($hasApoderadoSuplente), 'email', 'nullable'],
-            'sub_direccion' => Rule::requiredIf($hasApoderadoSuplente),
-            'm_nombre' => Rule::requiredIf($hasMadre),
-            'm_rut' => Rule::requiredIf($hasMadre),
-            'm_telefono' => [Rule::requiredIf($hasMadre), 'min:8', 'max:12', 'nullable'],
-            'm_email' => [Rule::requiredIf($hasMadre), 'email', 'nullable'],
-            'm_direccion' => Rule::requiredIf($hasMadre),
-            'p_nombre' => Rule::requiredIf($hasPadre),
-            'p_rut' => Rule::requiredIf($hasPadre),
-            'p_telefono' => [Rule::requiredIf($hasPadre), 'min:8', 'max:12', 'nullable'],
-            'p_email' => [Rule::requiredIf($hasPadre), 'email', 'nullable'],
-            'p_direccion' => Rule::requiredIf($hasPadre)
+        $rules = [
+            'estudiante.nombres' => 'required|max:255',
+            'estudiante.apellidos' => 'sometimes|required|max:255',
+            'estudiante.apellido_paterno' => 'sometimes|required|max:255',
+            'estudiante.apellido_materno' => 'sometimes|required|max:255',
+            'estudiante.genero' => [Rule::in(['M', 'F', 'N']), 'required'],
+            'estudiante.edad' => 'required|int',
+            'estudiante.fecha_nacimiento' => 'required|date',
+            'estudiante.enfermedades' => 'nullable|string',
+            'estudiante.persona_emergencia' => 'nullable|string',
+            'estudiante.telefono_emergencia' => 'nullable|string',
+            'estudiante.nacionalidad' => 'required|string|min:3|max:50',
+            'estudiante.run' => 'required|max:10',
+            'estudiante.email' => ['required', 'email', Rule::unique('estudiantes', 'email')->ignore($id)],
+            'estudiante.email_institucional' => ['sometimes', 'nullable', 'email', Rule::unique('estudiantes', 'email_institucional')->ignore($id)],
+            'estudiante.nivel' => 'required',
+            'estudiante.prioridad' => 'required',
+            'apoderado_titular.nombre' => Rule::requiredIf($hasApoderado),
+            'apoderado_titular.rut' => Rule::requiredIf($hasApoderado),
+            'apoderado_titular.telefono' => [Rule::requiredIf($hasApoderado), 'min:8', 'max:12', 'nullable'],
+            'apoderado_titular.email' => [Rule::requiredIf($hasApoderado), 'email', 'nullable'],
+            'apoderado_titular.direccion' => Rule::requiredIf($hasApoderado),
+            'apoderado_suplente.nombre' => Rule::requiredIf($hasApoderadoSuplente),
+            'apoderado_suplente.rut' => Rule::requiredIf($hasApoderadoSuplente),
+            'apoderado_suplente.telefono' => [Rule::requiredIf($hasApoderadoSuplente), 'min:8', 'max:12', 'nullable'],
+            'apoderado_suplente.email' => [Rule::requiredIf($hasApoderadoSuplente), 'email', 'nullable'],
+            'apoderado_suplente.direccion' => Rule::requiredIf($hasApoderadoSuplente),
+            'madre.nombre' => Rule::requiredIf($hasMadre),
+            'madre.rut' => Rule::requiredIf($hasMadre),
+            'madre.telefono' => [Rule::requiredIf($hasMadre), 'min:8', 'max:12', 'nullable'],
+            'madre.email' => [Rule::requiredIf($hasMadre), 'email', 'nullable'],
+            'madre.direccion' => Rule::requiredIf($hasMadre),
+            'padre.nombre' => Rule::requiredIf($hasPadre),
+            'padre.rut' => Rule::requiredIf($hasPadre),
+            'padre.telefono' => [Rule::requiredIf($hasPadre), 'min:8', 'max:12', 'nullable'],
+            'padre.email' => [Rule::requiredIf($hasPadre), 'email', 'nullable'],
+            'padre.direccion' => Rule::requiredIf($hasPadre),
+            'suplentes.*.nombre' => 'required|max:255',
+            'suplentes.*.rut' => 'required|max:10',
+            'suplentes.*.telefono' => 'required|min:8|max:12|nullable',
+            'suplentes.*.email' => 'required|email',
+            'suplentes.*.direccion' => 'required|max:255',
         ];
+        
+        return $rules;
     }
 
     private function messages(): array {
@@ -188,39 +197,45 @@ class Estudiante extends Model
 
     private function attributes(): array {
         return [
-            'nombres',
-            'apellidos',
-            'apellido_paterno' => 'apellido paterno',
-            'apellido_materno' => 'apellido materno',
-            'run',
-            'fecha_nacimiento' => 'fecha de nacimiento',
-            'enfermedades' => 'enfermedades y contraindicaciones',
-            'persona_emergencia' => 'remitir a',
-            'telefono_emergencia' => 'N° Telefónico',
-            'genero' => 'género',
-            'email_institucional' => 'correo institucional',
-            'nivel',
-            'prioridad',
-            'a_nombre' => 'nombre',
-            'a_rut' => 'rut',
-            'a_telefono' => 'telefono',
-            'a_email' => 'email',
-            'a_direccion' => 'direccion',
-            'sub_nombre' => 'nombre',
-            'sub_rut' => 'rut',
-            'sub_telefono' => 'telefono',
-            'sub_email' => 'email',
-            'sub_direccion' => 'direccion',
-            'm_nombre' => 'nombre',
-            'm_rut' => 'rut',
-            'm_telefono' => 'telefono',
-            'm_email' => 'email',
-            'm_direccion' => 'direccion',
-            'p_nombre' => 'nombre',
-            'p_rut' => 'rut',
-            'p_telefono' => 'telefono',
-            'p_email' => 'email',
-            'p_direccion' => 'direccion'
+            'estudiante.nombres' => 'nombres',
+            'estudiante.apellidos' => 'apellidos',
+            'estudiante.apellido_paterno' => 'apellido paterno',
+            'estudiante.apellido_materno' => 'apellido materno',
+            'estudiante.run' => 'rut',
+            'estudiante.fecha_nacimiento' => 'fecha de nacimiento',
+            'estudiante.enfermedades' => 'enfermedades y contraindicaciones',
+            'estudiante.persona_emergencia' => 'remitir a',
+            'estudiante.telefono_emergencia' => 'N° Telefónico',
+            'estudiante.genero' => 'género',
+            'estudiante.email' => 'email',
+            'estudiante.email_institucional' => 'correo institucional',
+            'estudiante.nivel' => 'nivel',
+            'estudiante.prioridad' => 'prioridad',
+            'apoderado_titular.nombre' => 'nombre',
+            'apoderado_titular.rut' => 'rut',
+            'apoderado_titular.telefono' => 'telefono',
+            'apoderado_titular.email' => 'email',
+            'apoderado_titular.direccion' => 'direccion',
+            'apoderado_suplente.nombre' => 'nombre',
+            'apoderado_suplente.rut' => 'rut',
+            'apoderado_suplente.telefono' => 'telefono',
+            'apoderado_suplente.email' => 'email',
+            'apoderado_suplente.direccion' => 'direccion',
+            'madre.nombre' => 'nombre',
+            'madre.rut' => 'rut',
+            'madre.telefono' => 'telefono',
+            'madre.email' => 'email',
+            'madre.direccion' => 'direccion',
+            'padre.nombre' => 'nombre',
+            'padre.rut' => 'rut',
+            'padre.telefono' => 'telefono',
+            'padre.email' => 'email',
+            'padre.direccion' => 'direccion',
+            'suplentes.*.nombre' => 'nombre',
+            'suplentes.*.rut' => 'rut',
+            'suplentes.*.telefono' => 'telefono',
+            'suplentes.*.email' => 'email',
+            'suplentes.*.direccion' => 'direccion'
         ];
     }
 
@@ -271,11 +286,11 @@ class Estudiante extends Model
     }
 
     public function store($req)
-    {
-        $hasApoderado = $req->a_nombre != '' || $req->a_rut != '' || $req->a_telefono != '' || $req->a_email != '' || $req->a_direccion != '';
-        $hasApoderadoSuplente = $req->sub_nombre != '' || $req->sub_rut != '' || $req->sub_telefono != '' || $req->sub_email != '' || $req->sub_direccion != '';
-        $hasMadre = $req->m_nombre != '' || $req->m_rut != '' || $req->m_telefono != '' || $req->m_email != '' || $req->m_direccion != '';
-        $hasPadre = $req->p_nombre != '' || $req->p_rut != '' || $req->p_telefono != '' || $req->p_email != '' || $req->p_direccion != '';
+    {   
+        $hasApoderado = !empty($req->apoderado_titular);
+        $hasApoderadoSuplente = !empty($req->apoderado_suplente);
+        $hasMadre = !empty($req->madre);
+        $hasPadre = !empty($req->padre);
         
         $req->validate(
             $this->rules($hasApoderado, $hasApoderadoSuplente, $hasMadre, $hasPadre),
@@ -284,58 +299,34 @@ class Estudiante extends Model
         );
 
         try {
-            Rut::parse($req->run)->validate();
-            $rut = Rut::parse($req->run)->format(Rut::FORMAT_ESCAPED);
+            Rut::parse($req->estudiante['run'])->validate();
+            $rut = Rut::parse($req->estudiante['run'])->format(Rut::FORMAT_ESCAPED);
             $rut = Rut::parse($rut)->toArray();
 
             //Estudiante
             $estudiante = new Estudiante();
-            $estudiante->nombres = $req->nombres;
-            $estudiante->apellidos = $req->apellido_paterno . ' ' . $req->apellido_materno;
+            $estudiante->nombres = $req->estudiante['nombres'];
+            $estudiante->apellidos = $req->estudiante['apellido_paterno'] . ' ' . $req->estudiante['apellido_materno'];
             $estudiante->rut = $rut[0];
             $estudiante->dv = $rut[1];
             $estudiante->es_nuevo = 1;
-            $estudiante->edad = $req->edad;
-            $estudiante->genero = $req->genero;
-            $estudiante->direccion = $req->direccion;
-            $estudiante->nacionalidad = $req->nacionalidad;
-            $estudiante->telefono = $req->telefono;
-            $estudiante->curso_id = $req->nivel;
-            $estudiante->prioridad = $req->prioridad;
-            $estudiante->fecha_nacimiento = $req->fecha_nacimiento;
-            $estudiante->email = $req->email;
-            $estudiante->enfermedades = $req->enfermedades;
-            $estudiante->persona_emergencia = $req->persona_emergencia;
-            $estudiante->telefono_emergencia = $req->telefono_emergencia;
+            $estudiante->edad = $req->estudiante['edad'];
+            $estudiante->genero = $req->estudiante['genero'];
+            $estudiante->direccion = $req->estudiante['direccion'];
+            $estudiante->nacionalidad = $req->estudiante['nacionalidad'];
+            $estudiante->curso_id = $req->estudiante['nivel'];
+            $estudiante->prioridad = $req->estudiante['prioridad'];
+            $estudiante->fecha_nacimiento = $req->estudiante['fecha_nacimiento'];
+            $estudiante->email = $req->estudiante['email'];
+            $estudiante->enfermedades = $req->estudiante['enfermedades'];
+            $estudiante->persona_emergencia = $req->estudiante['persona_emergencia'];
+            $estudiante->telefono_emergencia = $req->estudiante['telefono_emergencia'];
             $estudiante->apoderados = [
-              "apoderado_titular" => [
-                "nombre" => $req->a_nombre,
-                "rut" => $req->a_rut,
-                "telefono" => $req->a_telefono,
-                "email" => $req->a_email,
-                "direccion" => $req->a_direccion
-              ],
-              "apoderado_suplente" => [
-                "nombre" => $req->sub_nombre,
-                "rut" => $req->sub_rut,
-                "telefono" => $req->sub_telefono,
-                "email" => $req->sub_email,
-                "direccion" => $req->sub_direccion
-              ],
-              "madre" => [
-                "nombre" => $req->m_nombre,
-                "rut" => $req->m_rut,
-                "telefono" => $req->m_telefono,
-                "email" => $req->m_email,
-                "direccion" => $req->m_direccion
-              ],
-              "padre" => [
-                "nombre" => $req->p_nombre,
-                "rut" => $req->p_rut,
-                "telefono" => $req->p_telefono,
-                "email" => $req->p_email,
-                "direccion" => $req->p_direccion
-              ]
+              'apoderado_titular' => $req->apoderado_titular,
+              'apoderado_suplente' => empty($req->apoderado_suplente) ? null : $req->apoderado_suplente,
+              'madre' => empty($req->madre) ? null : $req->madre,
+              'padre' => empty($req->padre) ? null : $req->padre,
+              'suplentes' => $req->suplentes
             ];
 
             $estudiante->save();
@@ -345,6 +336,7 @@ class Estudiante extends Model
             $message = "RUT Incorrecto";
             return ['status' => 400, 'message' => $message];
         } catch (Exception $e) {
+          dd($e);
             $message = 'Ha ocurrido un error';
             if (str_contains($e->getMessage(), 'apoderado'))
                 $message = $e->getMessage();
@@ -357,11 +349,11 @@ class Estudiante extends Model
 
     public function actualizar($id, $request)
     {
-        $hasApoderado = $request->a_nombre != '' || $request->a_rut != '' || $request->a_telefono != '' || $request->a_email != '' || $request->a_direccion != '';
-        $hasApoderadoSuplente = $request->sub_nombre != '' || $request->sub_rut != '' || $request->sub_telefono != '' || $request->sub_email != '' || $request->sub_direccion != '';
-        $hasMadre = $request->m_nombre != '' || $request->m_rut != '' || $request->m_telefono != '' || $request->m_email != '' || $request->m_direccion != '';
-        $hasPadre = $request->p_nombre != '' || $request->p_rut != '' || $request->p_telefono != '' || $request->p_email != '' || $request->p_direccion != '';
-        
+        $hasApoderado = !empty($request->apoderado_titular);
+        $hasApoderadoSuplente = !empty($request->apoderado_suplente);
+        $hasMadre = !empty($request->madre);
+        $hasPadre = !empty($request->padre);       
+
         $request->validate(
             $this->rules($hasApoderado, $hasApoderadoSuplente, $hasMadre, $hasPadre, $id),
             $this->messages(),
@@ -370,57 +362,33 @@ class Estudiante extends Model
 
         try {
             $estudiante = Estudiante::findOrFail($id);
-            Rut::parse($request->run)->validate();
-            $rut = Rut::parse($request->run)->format(Rut::FORMAT_ESCAPED);
+            Rut::parse($request->estudiante['run'])->validate();
+            $rut = Rut::parse($request->estudiante['run'])->format(Rut::FORMAT_ESCAPED);
             $rut = Rut::parse($rut)->toArray();
 
-            $estudiante->apellidos = $request->apellidos;
-            $estudiante->nombres = $request->nombres;
+            $estudiante->apellidos = $request->estudiante['apellido_paterno'] . ' ' . $request->estudiante['apellido_materno'];
+            $estudiante->nombres = $request->estudiante['nombres'];
             $estudiante->rut = $rut[0];
             $estudiante->dv = $rut[1];
-            $estudiante->prioridad = $request->prioridad;
+            $estudiante->prioridad = $request->estudiante['prioridad'];
             if ($estudiante->prioridad == 'prioritario') $estudiante->beca()->dissociate();
-            $estudiante->curso_id = $request->nivel;
-            $estudiante->edad = $request->edad;
-            $estudiante->genero = $request->genero;
-            $estudiante->nacionalidad = $request->nacionalidad;
-            $estudiante->direccion = $request->direccion;
-            $estudiante->telefono = $request->telefono;
-            $estudiante->fecha_nacimiento = $request->fecha_nacimiento;
-            $estudiante->email = $request->email;
-            $estudiante->enfermedades = $request->enfermedades;
-            $estudiante->persona_emergencia = $request->persona_emergencia;
-            $estudiante->telefono_emergencia = $request->telefono_emergencia;
-            
+            $estudiante->curso_id = $request->estudiante['nivel'];
+            $estudiante->edad = $request->estudiante['edad'];
+            $estudiante->genero = $request->estudiante['genero'];
+            $estudiante->nacionalidad = $request->estudiante['nacionalidad'];
+            $estudiante->direccion = $request->estudiante['direccion'];
+            $estudiante->telefono = $request->estudiante['telefono'];
+            $estudiante->fecha_nacimiento = $request->estudiante['fecha_nacimiento'];
+            $estudiante->email = $request->estudiante['email'];
+            $estudiante->enfermedades = $request->estudiante['enfermedades'];
+            $estudiante->persona_emergencia = $request->estudiante['persona_emergencia'];
+            $estudiante->telefono_emergencia = $request->estudiante['telefono_emergencia'];
             $estudiante->apoderados = [
-              "apoderado_titular" => [
-                "nombre" => $request->a_nombre,
-                "rut" => $request->a_rut,
-                "telefono" => $request->a_telefono,
-                "email" => $request->a_email,
-                "direccion" => $request->a_direccion
-              ],
-              "apoderado_suplente" => [
-                "nombre" => $request->sub_nombre,
-                "rut" => $request->sub_rut,
-                "telefono" => $request->sub_telefono,
-                "email" => $request->sub_email,
-                "direccion" => $request->sub_direccion
-              ],
-              "madre" => [
-                "nombre" => $request->m_nombre,
-                "rut" => $request->m_rut,
-                "telefono" => $request->m_telefono,
-                "email" => $request->m_email,
-                "direccion" => $request->m_direccion
-              ],
-              "padre" => [
-                "nombre" => $request->p_nombre,
-                "rut" => $request->p_rut,
-                "telefono" => $request->p_telefono,
-                "email" => $request->p_email,
-                "direccion" => $request->p_direccion
-              ]
+              'apoderado_titular' => $request->apoderado_titular,
+              'apoderado_suplente' => empty($request->apoderado_suplente) ? null : $request->apoderado_suplente,
+              'madre' => empty($request->madre) ? null : $request->madre,
+              'padre' => empty($request->padre) ? null : $request->padre,
+              'suplentes' => $request->suplentes
             ];
 
             $estudiante->save();

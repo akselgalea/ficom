@@ -1,3 +1,8 @@
+@php
+  $totalPagado = $estudiante->getTotalPagos();
+  $totalAPagar = $estudiante->montoAnual();
+  $montoFaltante = $totalAPagar - $totalPagado;
+@endphp
 <div class="container card mt-3">
     <h2 class="mb-3">Pagos</h2>
     <div class="tabla-pagos-container">
@@ -405,5 +410,11 @@
                 </tr>
             </tbody>
         </table>
+
+        <div class="mt-3 d-flex gap-5">
+          <p class="font-weight-bold" style="font-size: 1rem;">Total pagado: {{ toCLP($totalPagado) }}</p>
+          <p class="font-weight-bold" style="font-size: 1rem;">Total a pagar: {{ toCLP($totalAPagar) }}</p>
+          <p class="font-weight-bold" style="font-size: 1rem;">Monto faltante: {{ toCLP($montoFaltante) }}</p>
+        </div>
     </div>
 </div>

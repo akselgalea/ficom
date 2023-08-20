@@ -76,7 +76,6 @@
 }
 
 @media print {
-  /* All your print styles go here */
   .botones-formulario {
     display: none !important;
   }
@@ -84,6 +83,9 @@
     display: none !important;
   }
   #navegador-top {
+    display: none !important;
+  }
+  .print-hidden {
     display: none !important;
   }
 }

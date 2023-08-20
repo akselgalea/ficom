@@ -1,8 +1,8 @@
 <div class="row mt-3">
   <h2 class="form-title">Datos del apoderado suplente</h2>
   <div class="form-group mb-8 col-md-8 col-6">
-      <label for="names" class="form-label">Nombre completo</label>
-      <input type="text" id="names" name="sub_nombre" value="{{ old('sub_nombre') }}" class="form-control @error('sub_nombre') is-invalid @enderror">
+      <label for="sub_nombre" class="form-label">Nombre completo</label>
+      <input type="text" id="sub_nombre" name="sub_nombre" value="{{ old('sub_nombre') }}" class="form-control @error('sub_nombre') is-invalid @enderror">
       
       @error('sub_nombre')
           <span class="invalid-feedback" role="alert">

@@ -71,6 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::group(['middleware' => ['check.role:admin|matriculas']], function () {
         Route::get('/estudiantes/nuevo', [EstudianteController::class, 'create'])->name('estudiante.create');
+        Route::get('/estudiantes/{id}', [EstudianteController::class, 'show'])->name('estudiante.show');
         Route::post('/estudiantes/crear', [EstudianteController::class, 'store'])->name('estudiante.store');
         Route::post('/estudiantes/{id}/editar', [EstudianteController::class, 'update'])->name('estudiante.update');
         Route::delete('/estudiantes/{id}/apoderados/{apoderado}', [EstudianteController::class, 'apoderadoRemove'])->name('estudiante.apoderado.remove');
@@ -79,7 +80,6 @@ Route::middleware('auth:sanctum')->group(function () {
     //Estudiante
     Route::get('/estudiantes', [EstudianteController::class, 'index'])->name('estudiante.index');
     Route::get('/estudiantes/nuevos', [EstudianteController::class, 'getEstudiantesNuevos'])->name('estudiante.nuevos');
-    Route::get('/estudiantes/{id}', [EstudianteController::class, 'show'])->name('estudiante.show');
     
     //Becas
     Route::get('/becas', [BecaController::class, 'index'])->name('beca.index');
