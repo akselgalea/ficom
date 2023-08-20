@@ -45,7 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/estudiantes/{id}/registrar-pago', [EstudianteController::class, 'storePago'])->name('pago.store');
         Route::get('/estudiantes/{id}/generar-reporte', [FicomController::class, 'createReport'])->name('estudiante.ficom.generar');
         Route::get('/estudiantes/generar-reporte', [FicomController::class, 'createReportAll'])->name('estudiante.ficom.generar.all');
-        
+  
         //Becas
         Route::get('/becas/nueva', [BecaController::class, 'create'])->name('beca.create');
         Route::post('/becas/nueva', [BecaController::class, 'store'])->name('beca.store');
@@ -75,6 +75,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/estudiantes/crear', [EstudianteController::class, 'store'])->name('estudiante.store');
         Route::post('/estudiantes/{id}/editar', [EstudianteController::class, 'update'])->name('estudiante.update');
         Route::delete('/estudiantes/{id}/apoderados/{apoderado}', [EstudianteController::class, 'apoderadoRemove'])->name('estudiante.apoderado.remove');
+        Route::get('/estudiantes/registro-escolar', [EstudianteController::class, 'registroEscolar'])->name('estudiante.registro-escolar');
     });
     
     //Estudiante

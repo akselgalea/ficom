@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Inertia\Inertia;
+use App\Exports\RegistroEscolarExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EstudianteController extends Controller
 {
@@ -139,6 +141,10 @@ class EstudianteController extends Controller
 
     public function apoderadoRemove($id, $apoderado) {
         return $this->estud->apoderadoRemove($id, $apoderado);
+    }
+
+    public function registroEscolar() {
+      return Excel::download(new RegistroEscolarExport(), "Registro escolar - " . now()->year . ".xlsx");
     }
     
     /**

@@ -8,9 +8,6 @@ use Maatwebsite\Excel\Concerns\FromView;
 
 class CursosExport implements FromView
 {
-    /**
-    * @return \Illuminate\Support\Collection
-    */
     private $id;
 
     public function __construct($id = null,) {

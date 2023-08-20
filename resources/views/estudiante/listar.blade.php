@@ -2,7 +2,8 @@
 @section('content')
     <div class="container card" id="table">
         <div class="buttons mb-3">
-            <a href="{{ route('estudiante.ficom.generar.all') }}" class="btn btn-primary">Generar reporte FICOM de todos los estudiantes</a>    
+            <a href="{{ route('estudiante.ficom.generar.all') }}" class="btn btn-primary">Generar reporte FICOM de todos los estudiantes</a>
+            <a href="{{ route('estudiante.registro-escolar') }}" class="btn btn-primary">Generar reporte Registro Escolar</a>    
         </div>
         <form class="buscador">
             <div>
