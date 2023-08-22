@@ -2,11 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\BecaController;
-use App\Http\Controllers\CursoController;
-use App\Http\Controllers\EstudianteController;
-use App\Http\Controllers\FicomController;
-use App\Http\Controllers\NivelController;
+use App\Http\Controllers\{
+  BecaController,
+  CursoController,
+  EstudianteController,
+  FicomController,
+  NivelController,
+  UserController
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -85,4 +88,14 @@ Route::middleware('auth:sanctum')->group(function () {
     //Becas
     Route::get('/becas', [BecaController::class, 'index'])->name('beca.index');
     Route::get('/becas/{id}', [BecaController::class, 'show'])->name('beca.show');
+
+    Route::group(['middleware' => ['check.role:admin']], function () {
+      Route::get('/usuarios', [UserController::class, 'index'])->name('usuario.index');
+      Route::get('/usuarios/bitacora', [UserController::class, 'index'])->name('usuario.bitacora');
+      Route::get('/usuarios/nuevo', [UserController::class, 'create'])->name('usuario.create');
+      Route::get('/usuarios/{id}', [UserController::class, 'get'])->name('usuario.get');
+      Route::post('/usuarios', [UserController::class, 'store'])->name('usuario.store');
+      Route::patch('/usuarios/{id}', [UserController::class, 'update'])->name('usuario.update');
+      Route::delete('/usuarios/{id}', [UserController::class, 'delete'])->name('usuario.delete');
+    });
 });

@@ -1,12 +1,13 @@
 <script>
 	import { onMount } from 'svelte';
 	import { useForm } from '@inertiajs/svelte';
-	import toast, { Toaster } from 'svelte-french-toast';
+	import toast from 'svelte-french-toast';
 	import StudentFields from './Partials/StudentFields.svelte';
 	import GuardianFields from './Partials/GuardianFields.svelte';
 	import SubstituteFields from './Partials/SubstituteFields.svelte';
 	import ParentFields from './Partials/ParentFields.svelte';
 	import escudo from '../../assets/img/escudo.png';
+	import Layout from '../../layouts/layout.svelte';
 
 	export let cursos, errors;
 
@@ -138,62 +139,47 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Crear estudiante - Simón Bolívar</title>
-</svelte:head>
-
-<Toaster />
-
-<main class="main-container">
-	<div class="container card">
-		<form on:submit|preventDefault={handleSubmit}>
-			<header class="mb-5 header-estudiante">
-				<img height="120px" src={escudo} alt="escudo colegio simon bolivar" />
-				<div class="text-center">
-					<h2>Pre-Matrícula {today.getFullYear()}</h2>
-					<h3>Colegio Simón Bolívar</h3>
-				</div>
-				<div>
-					<h5 class="text-center">Fecha:</h5>
-					<h5 class="text-center">{new Intl.DateTimeFormat('es-CL').format(today)}</h5>
-				</div>
-			</header>
-
-			<StudentFields bind:estudiante={$form.estudiante} {cursos} errors={erroresEstudiante} />
-			<GuardianFields
-				bind:apoderado={$form.apoderado_titular}
-				type="titular"
-				errors={erroresApoderadoTitular}
-			/>
-			<GuardianFields
-				bind:apoderado={$form.apoderado_suplente}
-				type="suplente"
-				errors={erroresApoderadoSuplente}
-			/>
-			<ParentFields bind:parent={$form.madre} type="madre" errors={erroresMadre} />
-			<ParentFields bind:parent={$form.padre} type="padre" errors={erroresPadre} />
-			<SubstituteFields bind:suplentes={$form.suplentes} errors={erroresSuplentes} />
-
-			<footer class="footer-estudiante">
-				<p>Firma Apoderado</p>
-				<p>Firma recepción</p>
-			</footer>
-
-			<div class="my-3 botones-formulario">
-				<button type="submit" class="btn btn-primary">Guardar</button>
-				<button type="button" class="btn btn-secondary" on:click={() => window.print()}
-					>Generar documento</button
-				>
+<Layout title="Crear estudiante">
+	<form on:submit|preventDefault={handleSubmit}>
+		<header class="mb-5 header-estudiante">
+			<img height="120px" src={escudo} alt="escudo colegio simon bolivar" />
+			<div class="text-center">
+				<h2>Pre-Matrícula {today.getFullYear()}</h2>
+				<h3>Colegio Simón Bolívar</h3>
 			</div>
-		</form>
-	</div>
-</main>
-<slot />
+			<div>
+				<h5 class="text-center">Fecha:</h5>
+				<h5 class="text-center">{new Intl.DateTimeFormat('es-CL').format(today)}</h5>
+			</div>
+		</header>
 
-<style>
-	.main-container {
-		max-width: 1080px;
-		margin: 0 auto;
-		padding: 1rem;
-	}
-</style>
+		<StudentFields bind:estudiante={$form.estudiante} {cursos} errors={erroresEstudiante} />
+		<GuardianFields
+			bind:apoderado={$form.apoderado_titular}
+			type="titular"
+			errors={erroresApoderadoTitular}
+		/>
+		<GuardianFields
+			bind:apoderado={$form.apoderado_suplente}
+			type="suplente"
+			errors={erroresApoderadoSuplente}
+		/>
+		<ParentFields bind:parent={$form.madre} type="madre" errors={erroresMadre} />
+		<ParentFields bind:parent={$form.padre} type="padre" errors={erroresPadre} />
+		<SubstituteFields bind:suplentes={$form.suplentes} errors={erroresSuplentes} />
+
+		<footer class="footer-estudiante">
+			<p>Firma Apoderado</p>
+			<p>Firma recepción</p>
+		</footer>
+
+		<div class="my-3 botones-formulario">
+			<button type="submit" class="btn btn-primary">Guardar</button>
+			<button type="button" class="btn btn-secondary" on:click={() => window.print()}
+				>Generar documento</button
+			>
+		</div>
+	</form>
+
+	<slot />
+</Layout>

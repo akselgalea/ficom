@@ -69,6 +69,21 @@
                                     <a href="{{ route('nivel.index') }}" class="dropdown-item">Niveles</a>
                                 </div>
                             </li>
+
+                            @if(auth()->user()->hasAnyRole('admin'))
+                              <li class="nav-item dropdown">
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    Usuarios
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                  <a class="dropdown-item" href="{{ route('usuario.index') }}">Todos</a>
+                                  <a class="dropdown-item" href="{{ route('usuario.create') }}">Nuevo usuario</a>
+                                  <a class="dropdown-item" href="{{ route('usuario.bitacora') }}">Bitácora</a>
+                                </div>
+                              </li>
+                            @endif
+
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}

@@ -1,12 +1,13 @@
 <script>
 	import { onMount } from 'svelte';
 	import { useForm } from '@inertiajs/svelte';
-	import toast, { Toaster } from 'svelte-french-toast';
+	import toast from 'svelte-french-toast';
 	import StudentFields from './Partials/StudentFields.svelte';
 	import GuardianFields from './Partials/GuardianFields.svelte';
 	import SubstituteFields from './Partials/SubstituteFields.svelte';
 	import ParentFields from './Partials/ParentFields.svelte';
 	import escudo from '../../assets/img/escudo.png';
+	import Layout from '../../layouts/layout.svelte';
 	export let cursos, errors, estudiante;
 
 	$: errors && handleErrorsChange();
@@ -120,114 +121,102 @@
 	<title>Perfil estudiante - Simón Bolívar</title>
 </svelte:head>
 
-<Toaster />
+<Layout>
+	<div class="buttons mb-4 print-hidden">
+		<a href="/estudiantes/{estudiante.id}/pagos" class="btn btn-primary"
+			>Ver historial de pago</a
+		>
+		<a href="/estudiantes/{estudiante.id}/becas" class="btn btn-primary">Administrar beca</a>
+	</div>
 
-<main class="main-container">
-	<div class="container card">
-		<div class="buttons mb-4 print-hidden">
-			<a href="/estudiantes/{estudiante.id}/pagos" class="btn btn-primary"
-				>Ver historial de pago</a
+	<form on:submit|preventDefault={handleSubmit}>
+		{#if editing}
+			<header class="mb-5 header-estudiante">
+				<img height="120px" src={escudo} alt="escudo colegio simon bolivar" />
+				<div class="text-center">
+					<h2>Pre-Matrícula {today.getFullYear()}</h2>
+					<h3>Colegio Simón Bolívar</h3>
+				</div>
+				<div>
+					<h5 class="text-center">Fecha:</h5>
+					<h5 class="text-center">
+						{new Intl.DateTimeFormat('es-CL').format(today)}
+					</h5>
+				</div>
+			</header>
+		{/if}
+
+		<StudentFields
+			bind:estudiante={$form.estudiante}
+			{cursos}
+			errors={erroresEstudiante}
+			disabled={!editing}
+		/>
+
+		<GuardianFields
+			bind:apoderado={$form.apoderado_titular}
+			type="titular"
+			errors={erroresApoderadoTitular}
+			disabled={!editing}
+		/>
+
+		<GuardianFields
+			bind:apoderado={$form.apoderado_suplente}
+			type="suplente"
+			errors={erroresApoderadoSuplente}
+			disabled={!editing}
+		/>
+
+		<ParentFields
+			bind:parent={$form.madre}
+			type="madre"
+			errors={erroresMadre}
+			disabled={!editing}
+		/>
+
+		<ParentFields
+			bind:parent={$form.padre}
+			type="padre"
+			errors={erroresPadre}
+			disabled={!editing}
+		/>
+
+		<SubstituteFields
+			bind:suplentes={$form.suplentes}
+			errors={erroresSuplentes}
+			disabled={!editing}
+		/>
+
+		{#if editing}
+			<footer class="footer-estudiante">
+				<p>Firma Apoderado</p>
+				<p>Firma recepción</p>
+			</footer>
+		{/if}
+
+		<div class="my-3 botones-formulario">
+			<button
+				type="button"
+				class="btn btn-secondary"
+				hidden={editing}
+				on:click={() => toggleEdit()}>Editar</button
 			>
-			<a href="/estudiantes/{estudiante.id}/becas" class="btn btn-primary">Administrar beca</a
+			<button
+				type="button"
+				class="btn btn-danger"
+				hidden={!editing}
+				on:click={() => toggleEdit()}>Cancelar</button
+			>
+
+			<button type="submit" class="btn btn-primary" hidden={!editing}>Guardar</button>
+			<button
+				type="button"
+				class="btn btn-secondary"
+				on:click={() => window.print()}
+				hidden={!editing}>Generar documento</button
 			>
 		</div>
+	</form>
 
-		<form on:submit|preventDefault={handleSubmit}>
-			{#if editing}
-				<header class="mb-5 header-estudiante">
-					<img height="120px" src={escudo} alt="escudo colegio simon bolivar" />
-					<div class="text-center">
-						<h2>Pre-Matrícula {today.getFullYear()}</h2>
-						<h3>Colegio Simón Bolívar</h3>
-					</div>
-					<div>
-						<h5 class="text-center">Fecha:</h5>
-						<h5 class="text-center">
-							{new Intl.DateTimeFormat('es-CL').format(today)}
-						</h5>
-					</div>
-				</header>
-			{/if}
-
-			<StudentFields
-				bind:estudiante={$form.estudiante}
-				{cursos}
-				errors={erroresEstudiante}
-				disabled={!editing}
-			/>
-
-			<GuardianFields
-				bind:apoderado={$form.apoderado_titular}
-				type="titular"
-				errors={erroresApoderadoTitular}
-				disabled={!editing}
-			/>
-
-			<GuardianFields
-				bind:apoderado={$form.apoderado_suplente}
-				type="suplente"
-				errors={erroresApoderadoSuplente}
-				disabled={!editing}
-			/>
-
-			<ParentFields
-				bind:parent={$form.madre}
-				type="madre"
-				errors={erroresMadre}
-				disabled={!editing}
-			/>
-
-			<ParentFields
-				bind:parent={$form.padre}
-				type="padre"
-				errors={erroresPadre}
-				disabled={!editing}
-			/>
-
-			<SubstituteFields
-				bind:suplentes={$form.suplentes}
-				errors={erroresSuplentes}
-				disabled={!editing}
-			/>
-
-			{#if editing}
-				<footer class="footer-estudiante">
-					<p>Firma Apoderado</p>
-					<p>Firma recepción</p>
-				</footer>
-			{/if}
-
-			<div class="my-3 botones-formulario">
-				<button
-					type="button"
-					class="btn btn-secondary"
-					hidden={editing}
-					on:click={() => toggleEdit()}>Editar</button
-				>
-				<button
-					type="button"
-					class="btn btn-danger"
-					hidden={!editing}
-					on:click={() => toggleEdit()}>Cancelar</button
-				>
-
-				<button type="submit" class="btn btn-primary" hidden={!editing}>Guardar</button>
-				<button
-					type="button"
-					class="btn btn-secondary"
-					on:click={() => window.print()}
-					hidden={!editing}>Generar documento</button
-				>
-			</div>
-		</form>
-	</div>
-</main>
-<slot />
-
-<style>
-	.main-container {
-		max-width: 1080px;
-		margin: 0 auto;
-		padding: 1rem;
-	}
-</style>
+	<slot />
+</Layout>
