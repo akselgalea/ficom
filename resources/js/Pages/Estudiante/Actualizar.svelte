@@ -23,11 +23,11 @@
 
 	let form = useForm({
 		estudiante: estudiante,
-		apoderado_titular: estudiante.apoderados.apoderado_titular ?? {},
-		apoderado_suplente: estudiante.apoderados.apoderado_suplente ?? {},
-		madre: estudiante.apoderados.madre ?? {},
-		padre: estudiante.apoderados.padre ?? {},
-		suplentes: estudiante.apoderados.suplentes
+		apoderado_titular: estudiante.apoderados?.apoderado_titular ?? {},
+		apoderado_suplente: estudiante.apoderados?.apoderado_suplente ?? {},
+		madre: estudiante.apoderados?.madre ?? {},
+		padre: estudiante.apoderados?.padre ?? {},
+		suplentes: estudiante.apoderados?.suplentes
 	});
 
 	let editing = false;
