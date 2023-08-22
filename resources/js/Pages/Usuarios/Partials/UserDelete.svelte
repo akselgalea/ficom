@@ -6,8 +6,14 @@
 
 	const dispatch = createEventDispatcher();
 	let input = '';
+	const confirmText = user.name.split(' ')[0];
 
 	function handleDelete() {
+		if (input != confirmText) {
+			toast.error('Los textos coinciden');
+			return;
+		}
+
 		axios.delete(`/usuarios/${user.id}`).then(
 			(res) => {
 				console.log(res);
@@ -65,7 +71,7 @@
 			<div class="modal-body">
 				<p class="text-start m-0">
 					Estás a punto de eliminar al usuario {user.name}.
-					<br />Escribe <b>{user.name.split(' ')[0]}</b> para confirmar su eliminación.
+					<br />Escribe <b>{confirmText}</b> para confirmar su eliminación.
 				</p>
 				<input
 					type="text"

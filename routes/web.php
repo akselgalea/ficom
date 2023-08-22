@@ -91,7 +91,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::group(['middleware' => ['check.role:admin']], function () {
       Route::get('/usuarios', [UserController::class, 'index'])->name('usuario.index');
-      Route::get('/usuarios/bitacora', [UserController::class, 'index'])->name('usuario.bitacora');
+      Route::get('/usuarios/bitacora', [UserController::class, 'bitacora'])->name('usuario.bitacora');
       Route::get('/usuarios/nuevo', [UserController::class, 'create'])->name('usuario.create');
       Route::get('/usuarios/{id}', [UserController::class, 'get'])->name('usuario.get');
       Route::post('/usuarios', [UserController::class, 'store'])->name('usuario.store');
