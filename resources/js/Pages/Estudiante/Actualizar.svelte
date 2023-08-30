@@ -123,7 +123,7 @@
 				(res) => {
 					toast.success('Estudiante eliminado con éxito');
 					setTimeout(() => {
-						window.location.replace('/');
+						window.location.replace('/estudiantes');
 					}, 1500);
 				},
 				(err) => {

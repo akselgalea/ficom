@@ -1,10 +1,19 @@
 <script>
+	import { onMount } from 'svelte';
+
 	export let errors,
 		estudiantes,
 		perPage = 10,
 		cursos;
 
-	console.log(estudiantes, cursos);
+	const urlParams = new URLSearchParams(window.location.search);
+	let search;
+	let curso;
+
+	onMount(() => {
+		search = urlParams.get('search');
+		curso = Number(urlParams.get('curso')) || 'todos';
+	});
 
 	$: errors && handleErrors();
 
@@ -32,14 +41,14 @@
 	</div>
 	<form class="buscador">
 		<div>
-			<select class="form-select" name="perPage" id="curso-select">
-				<option value="10" selected={perPage == 10}>10</option>
-				<option value="15" selected={perPage == 15}>15</option>
-				<option value="20" selected={perPage == 20}>20</option>
+			<select class="form-select" name="perPage" id="curso-select" bind:value={perPage}>
+				<option value="10">10</option>
+				<option value="15">15</option>
+				<option value="20">20</option>
 			</select>
 		</div>
 		<div>
-			<select class="form-select" name="curso" id="curso-select">
+			<select class="form-select" name="curso" id="curso-select" bind:value={curso}>
 				<option selected value="todos">Todos</option>
 				{#each cursos as curso}
 					<option value={curso.id}>{curso.curso}-{curso.paralelo}</option>
@@ -53,6 +62,7 @@
 				type="search"
 				placeholder="Buscar"
 				aria-label="Buscar"
+				bind:value={search}
 			/>
 		</div>
 		<button class="btn btn-outline-dark" type="submit">Buscar</button>
@@ -136,6 +146,8 @@
 		</ul>
 	</section>
 </div>
+
+<slot />
 
 <style>
 	div.container#table {
