@@ -84,7 +84,7 @@
 
 				{#if errors.password}
 					<span class="invalid-feedback" role="alert">
-						<strong>{errors.password}</strong>
+						<strong>{errors.password[0]}</strong>
 					</span>
 				{/if}
 			</div>
