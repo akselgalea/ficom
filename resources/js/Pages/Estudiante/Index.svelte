@@ -10,6 +10,7 @@
 	let search, curso, page;
 
 	onMount(() => {
+		perPage = Number(perPage);
 		search = urlParams.get('search');
 		curso = Number(urlParams.get('curso')) || 'todos';
 		page = urlParams.get('page') ?? '1';
