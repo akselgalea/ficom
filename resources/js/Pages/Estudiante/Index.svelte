@@ -1,16 +1,13 @@
 <script>
 	import { onMount } from 'svelte';
 
-	export let errors,
-		estudiantes,
-		perPage = 10,
-		cursos;
+	export let errors, estudiantes, perPage, cursos;
 
 	const urlParams = new URLSearchParams(window.location.search);
-	let search, curso, page;
+	let search, curso, page, localPerPage;
 
 	onMount(() => {
-		perPage = Number(perPage);
+		localPerPage = String(perPage);
 		search = urlParams.get('search');
 		curso = Number(urlParams.get('curso')) || 'todos';
 		page = urlParams.get('page') ?? '1';
@@ -42,7 +39,7 @@
 	</div>
 	<form class="buscador">
 		<div>
-			<select class="form-select" name="perPage" id="curso-select" bind:value={perPage}>
+			<select class="form-select" name="perPage" id="perPage" bind:value={localPerPage}>
 				<option value="10">10</option>
 				<option value="15">15</option>
 				<option value="20">20</option>
