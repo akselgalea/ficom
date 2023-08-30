@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { useForm } from '@inertiajs/svelte';
+	import axios from 'axios';
 	import toast from 'svelte-french-toast';
 	import StudentFields from './Partials/StudentFields.svelte';
 	import GuardianFields from './Partials/GuardianFields.svelte';
@@ -115,6 +116,22 @@
 	function toggleEdit() {
 		editing = !editing;
 	}
+
+	const handleDelete = () => {
+		if (confirm('Estás seguro de que deseas eliminarlo?')) {
+			axios.delete(`/estudiantes/${estudiante.id}`).then(
+				(res) => {
+					toast.success('Estudiante eliminado con éxito');
+					setTimeout(() => {
+						window.location.replace('/');
+					}, 1500);
+				},
+				(err) => {
+					toast.error('Error al eliminar al estudiante');
+				}
+			);
+		}
+	};
 </script>
 
 <svelte:head>
@@ -201,6 +218,14 @@
 				hidden={editing}
 				on:click={() => toggleEdit()}>Editar</button
 			>
+			<button
+				type="button"
+				class="btn btn-danger"
+				hidden={editing}
+				on:click={() => handleDelete()}
+			>
+				Eliminar
+			</button>
 			<button
 				type="button"
 				class="btn btn-danger"

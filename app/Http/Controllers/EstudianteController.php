@@ -12,6 +12,7 @@ use Symfony\Component\Process\Process;
 use Inertia\Inertia;
 use App\Exports\RegistroEscolarExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Exception;
 
 class EstudianteController extends Controller
 {
@@ -103,7 +104,12 @@ class EstudianteController extends Controller
      */
     public function destroy($id)
     {
-        return null;
+      try {
+        $this->estud->findOrFail($id)->delete();
+        return response()->json(['message' => 'Usuario eliminado con éxito'], 200);
+      } catch(Exception $e) {
+        return response()->json(['message' => $e->getMessage()], 500);
+      }
     }
 
 

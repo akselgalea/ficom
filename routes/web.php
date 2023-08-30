@@ -73,12 +73,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     
     Route::group(['middleware' => ['check.role:admin|matriculas']], function () {
+        Route::get('/estudiantes/registro', [EstudianteController::class, 'registroEscolar'])->name('estudiante.registro');
         Route::get('/estudiantes/nuevo', [EstudianteController::class, 'create'])->name('estudiante.create');
         Route::get('/estudiantes/{id}', [EstudianteController::class, 'show'])->name('estudiante.show');
+        Route::delete('/estudiantes/{id}', [EstudianteController::class, 'destroy'])->name('estudiante.delete');
         Route::post('/estudiantes/crear', [EstudianteController::class, 'store'])->name('estudiante.store');
         Route::post('/estudiantes/{id}/editar', [EstudianteController::class, 'update'])->name('estudiante.update');
         Route::delete('/estudiantes/{id}/apoderados/{apoderado}', [EstudianteController::class, 'apoderadoRemove'])->name('estudiante.apoderado.remove');
-        Route::get('/estudiantes/registro-escolar', [EstudianteController::class, 'registroEscolar'])->name('estudiante.registro-escolar');
     });
     
     //Estudiante
