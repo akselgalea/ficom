@@ -35,6 +35,8 @@ class UserService
     public function store($req) {
       $validated = $req->validated();
       $this->user->create($validated);
+      
+      return ['status' => 200, 'message' => 'Usuario creado con éxito!'];
     }
 
     public function update($id, $req) {

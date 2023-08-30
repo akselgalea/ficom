@@ -41,7 +41,7 @@ class UserController extends Controller
 
     public function create() {
       Inertia::setRootView('layouts.inertia');
-      return Inertia::render('Usuarios/Crear', ['roles' => Role::all()->toArray()]);
+      return Inertia::render('Usuarios/Nuevo', ['roles' => Role::all()->toArray()]);
     }
     
     public function store(CreateUserRequest $req) {

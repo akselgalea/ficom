@@ -27,8 +27,9 @@ class CreateUserRequest extends FormRequest
 
         return [
           'name' => 'required|string',
-          'email' => !empty($req->id) ? 'required|string|unique:users,email,'. $req->id . ',id' : 'required|string|unique,users,email',
+          'email' => !empty($req->id) ? 'required|string|unique:users,email,'. $req->id . ',id' : 'required|string|unique:users,email',
           'roles' => 'sometimes|array',
+          'password' => 'sometimes|string|min:6|max:22|confirmed',
           'roles.*' => 'string'
         ];
     }
@@ -41,7 +42,8 @@ class CreateUserRequest extends FormRequest
 
     public function attributes() {
       return [
-        'name' => 'nombre'
+        'name' => 'nombre',
+        'password' => 'contraseña'
       ];
     }
 }
