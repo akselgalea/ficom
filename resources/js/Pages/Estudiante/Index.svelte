@@ -7,12 +7,12 @@
 		cursos;
 
 	const urlParams = new URLSearchParams(window.location.search);
-	let search;
-	let curso;
+	let search, curso, page;
 
 	onMount(() => {
 		search = urlParams.get('search');
 		curso = Number(urlParams.get('curso')) || 'todos';
+		page = urlParams.get('page');
 	});
 
 	$: errors && handleErrors();
@@ -137,7 +137,7 @@
 
 		<ul class="pagination">
 			{#each estudiantes.links as link}
-				<li class="page-item">
+				<li class="page-item" class:active={link.label == page}>
 					<a class="page-link" class:disabled={!link.url} href={link.url}>
 						{@html link.label}
 					</a>
