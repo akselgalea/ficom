@@ -12,7 +12,7 @@
 	onMount(() => {
 		search = urlParams.get('search');
 		curso = Number(urlParams.get('curso')) || 'todos';
-		page = urlParams.get('page');
+		page = urlParams.get('page') ?? '1';
 	});
 
 	$: errors && handleErrors();
@@ -85,7 +85,7 @@
 						<td>{estud.apellidos}</td>
 						<td>{estud.nombres}</td>
 						<td>{estud.rut}-{estud.dv}</td>
-						<td class="flc" />
+						<td class="flc">{estud.prioridad}</td>
 						<td>{estud.curso ? `${estud.curso.curso}-${estud.curso.paralelo}` : ''}</td>
 						<td>
 							<a
