@@ -128,7 +128,7 @@
 		<ul class="pagination">
 			{#each estudiantes.links as link}
 				<li class="page-item">
-					<a class="page-link" class:disabled={!link.active} href={link.url}>
+					<a class="page-link" class:disabled={!link.url} href={link.url}>
 						{@html link.label}
 					</a>
 				</li>
