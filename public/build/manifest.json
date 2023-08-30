@@ -1,0 +1,26 @@
+{
+  "resources/js/app.css": {
+    "file": "assets/app-ef2e2f1d.css",
+    "src": "resources/js/app.css"
+  },
+  "resources/js/app.js": {
+    "assets": [
+      "assets/escudo-4d2c5d7d.png"
+    ],
+    "css": [
+      "assets/app-ef2e2f1d.css"
+    ],
+    "file": "assets/app-4169de99.js",
+    "isEntry": true,
+    "src": "resources/js/app.js"
+  },
+  "resources/js/assets/img/escudo.png": {
+    "file": "assets/escudo-4d2c5d7d.png",
+    "src": "resources/js/assets/img/escudo.png"
+  },
+  "resources/sass/app.scss": {
+    "file": "assets/app-498c6384.css",
+    "isEntry": true,
+    "src": "resources/sass/app.scss"
+  }
+}

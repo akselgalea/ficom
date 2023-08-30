@@ -27,8 +27,10 @@ class EstudianteController extends Controller
      */
     public function index(Request $req)
     {   
+        Inertia::setRootView('layouts.inertia');
         $data = $this->estud->index($req);
-        return view('estudiante.listar', ['estudiantes' => $data['estudiantes'], 'perPage' => $data['perPage'], 'cursos' => Curso::all()]);
+
+        return Inertia::render('Estudiante/Index', ['estudiantes' => $data['estudiantes'], 'perPage' => $data['perPage'], 'cursos' => Curso::all()]);
     }
 
     /**
@@ -172,7 +174,7 @@ class EstudianteController extends Controller
                 $file = $request->file('file');
                 $a = Storage::disk('local')->put('docs',$file);
                 $process = new Process([
-                    'python', // para linux
+                    'python3', // para linux
                     //'python', //para windows
                     storage_path('app/xml/dataConverter.py'),
                     storage_path('app/'.$a)
@@ -190,7 +192,7 @@ class EstudianteController extends Controller
                 $file = $request->file('file');
                 $a = Storage::disk('local')->put('docs',$file);
                 $process = new Process([
-                    'python', // para linux
+                    'python3', // para linux
                     //'python', //para windows
                     storage_path('app/xml/dataConverter2.py'),
                     storage_path('app/'.$a)
