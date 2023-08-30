@@ -36,10 +36,10 @@
               <td>{{ $es->rut . 'A' }}</td>
               <td>{{ $es->es_nuevo ? 'X' : '' }}</td>
               <td>{{ $es->correo_institucional ?? '' }}</td>
-              <td>{{ $es->apoderados['apoderado_titular']['nombre'] }}</td>
-              <td>{{ $es->apoderados['apoderado_titular']['telefono'] }}</td>
-              <td>{{ $es->apoderados['apoderado_titular']['email'] }}</td>
-              <td>{{ $es->direccion }}</td>
+              <td>{{ $es->apoderados['apoderado_titular']['nombre'] ?? '' }}</td>
+              <td>{{ $es->apoderados['apoderado_titular']['telefono'] ?? '' }}</td>
+              <td>{{ $es->apoderados['apoderado_titular']['email'] ?? '' }}</td>
+              <td>{{ $es->direccion ?? '' }}</td>
           </tr>
       @endforeach
   </tbody>
