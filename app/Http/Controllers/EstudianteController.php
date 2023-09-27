@@ -39,8 +39,13 @@ class EstudianteController extends Controller
      * @param  \Illuminate\Http\Request  $request
      */
     public function store(Request $req)
-    {
-        return redirect()->back()->with('res', $this->estud->store($req));
+    {  
+        $result = $this->estud->store($req);
+
+        if(isset($result['status']))
+            return response()->json(['message' => $result['message']], $result['status']);
+
+        return response()->json($result, 400);
     }
 
     /**

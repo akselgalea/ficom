@@ -3,6 +3,7 @@
 		estudiante,
 		errors,
 		disabled = false;
+
 </script>
 
 <div class="row">
@@ -27,7 +28,7 @@
 
 		{#if errors.nivel}
 			<span class="invalid-feedback" role="alert">
-				<strong>{errors.nivel}</strong>
+				<strong>{errors.nivel[0]}</strong>
 			</span>
 		{/if}
 	</div>
@@ -45,7 +46,7 @@
 
 		{#if errors.apellido_paterno}
 			<span class="invalid-feedback" role="alert">
-				<strong>{errors.apellido_paterno}</strong>
+				<strong>{errors.apellido_paterno[0]}</strong>
 			</span>
 		{/if}
 	</div>
@@ -63,7 +64,7 @@
 
 		{#if errors.apellido_materno}
 			<span class="invalid-feedback" role="alert">
-				<strong>{errors.apellido_materno}</strong>
+				<strong>{errors.apellido_materno[0]}</strong>
 			</span>
 		{/if}
 	</div>
@@ -81,7 +82,7 @@
 
 		{#if errors.nombres}
 			<span class="invalid-feedback" role="alert">
-				<strong>{errors.nombres}</strong>
+				<strong>{errors.nombres[0]}</strong>
 			</span>
 		{/if}
 	</div>
@@ -100,7 +101,7 @@
 
 		{#if errors.run}
 			<span class="invalid-feedback" role="alert">
-				<strong>{errors.run}</strong>
+				<strong>{errors.run[0]}</strong>
 			</span>
 		{/if}
 	</div>
@@ -118,7 +119,7 @@
 
 		{#if errors.fecha_nacimiento}
 			<span class="invalid-feedback" role="alert">
-				<strong>{errors.fecha_nacimiento}</strong>
+				<strong>{errors.fecha_nacimiento[0]}</strong>
 			</span>
 		{/if}
 	</div>
@@ -146,7 +147,7 @@
 
 		{#if errors.prioridad}
 			<span class="invalid-feedback" role="alert">
-				<strong>{errors.prioridad}</strong>
+				<strong>{errors.prioridad[0]}</strong>
 			</span>
 		{/if}
 	</div>
@@ -165,7 +166,7 @@
 
 		{#if errors.email}
 			<span class="invalid-feedback" role="alert">
-				<strong>{errors.email}</strong>
+				<strong>{errors.email[0]}</strong>
 			</span>
 		{/if}
 	</div>
@@ -184,7 +185,7 @@
 
 		{#if errors.edad}
 			<span class="invalid-feedback" role="alert">
-				<strong>{errors.edad}</strong>
+				<strong>{errors.edad[0]}</strong>
 			</span>
 		{/if}
 	</div>
@@ -205,7 +206,7 @@
 
 		{#if errors.genero}
 			<span class="invalid-feedback" role="alert">
-				<strong>{errors.genero}</strong>
+				<strong>{errors.genero[0]}</strong>
 			</span>
 		{/if}
 	</div>
@@ -224,7 +225,7 @@
 
 		{#if errors.nacionalidad}
 			<span class="invalid-feedback" role="alert">
-				<strong>{errors.nacionalidad}</strong>
+				<strong>{errors.nacionalidad[0]}</strong>
 			</span>
 		{/if}
 	</div>
@@ -243,7 +244,7 @@
 
 		{#if errors.direccion}
 			<span class="invalid-feedback" role="alert">
-				<strong>{errors.direccion}</strong>
+				<strong>{errors.direccion[0]}</strong>
 			</span>
 		{/if}
 	</div>
@@ -262,7 +263,7 @@
 
 		{#if errors.enfermedades}
 			<span class="invalid-feedback" role="alert">
-				<strong>{errors.enfermedades}</strong>
+				<strong>{errors.enfermedades[0]}</strong>
 			</span>
 		{/if}
 	</div>
@@ -281,7 +282,7 @@
 
 		{#if errors.persona_emergencia}
 			<span class="invalid-feedback" role="alert">
-				<strong>{errors.persona_emergencia}</strong>
+				<strong>{errors.persona_emergencia[0]}</strong>
 			</span>
 		{/if}
 	</div>
@@ -300,7 +301,7 @@
 
 		{#if errors.telefono_emergencia}
 			<span class="invalid-feedback" role="alert">
-				<strong>{errors.telefono_emergencia}</strong>
+				<strong>{errors.telefono_emergencia[0]}</strong>
 			</span>
 		{/if}
 	</div>

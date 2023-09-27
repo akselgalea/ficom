@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import Layout from '../../layouts/layout.svelte';
+	import Pagination from '../../components/Pagination.svelte';
 
 	export let errors, estudiantes, perPage, cursos;
 
@@ -130,16 +131,8 @@
 					{/each}
 				</tbody>
 			</table>
-	
-			<ul class="pagination">
-				{#each estudiantes.links as link}
-					<li class="page-item" class:active={link.label == page}>
-						<a class="page-link" class:disabled={!link.url} href={link.url}>
-							{@html link.label}
-						</a>
-					</li>
-				{/each}
-			</ul>
+			
+			<Pagination links={estudiantes.links} {page} />
 		</section>
 	</div>
 </Layout>
@@ -147,10 +140,6 @@
 <slot />
 
 <style>
-	div.container#table {
-		min-height: 500px;
-	}
-
 	tr {
 		vertical-align: middle;
 	}

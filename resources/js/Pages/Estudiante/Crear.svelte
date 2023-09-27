@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { useForm } from '@inertiajs/svelte';
+	import axios from 'axios';
 	import toast from 'svelte-french-toast';
 	import StudentFields from './Partials/StudentFields.svelte';
 	import GuardianFields from './Partials/GuardianFields.svelte';
@@ -20,7 +20,7 @@
 	let erroresPadre = {};
 	let erroresSuplentes = {};
 
-	let form = useForm({
+	let form = {
 		estudiante: {
 			nivel: '',
 			apellido_paterno: '',
@@ -49,7 +49,7 @@
 		madre: {},
 		padre: {},
 		suplentes: []
-	});
+	};
 
 	let today = new Date();
 
@@ -67,27 +67,37 @@
 	});
 
 	function handleSubmit() {
-		$form.post('/estudiantes/crear', {
-			preserveScroll: true,
-			onSuccess: () => {
-				toast.success('Estudiante guardado con éxito!');
+		axios.post('/estudiantes/crear', form).then(res => {
+			toast.success('Estudiante guardado con éxito!');
 
-				window.addEventListener(
-					'afterprint',
-					(event) => {
-						toast(
-							'Ahora que has guardado el documento\nse ha limpiado el formulario 👍'
-						);
-						$form.reset();
-					},
-					{ once: true }
-				);
+			window.addEventListener(
+				'afterprint',
+				(event) => {
+					toast(
+						'Ahora que has guardado el documento\nse ha limpiado el formulario 👍'
+					);
+					form.reset();
+				},
+				{ once: true }
+			);
 
-				setTimeout(() => {
-					window.print();
-				}, 2200);
+			setTimeout(() => {
+				window.print();
+			}, 2200);
+		}, err => {
+			const resErrors = err.response.data.errors ?? null;
+
+			if(resErrors)
+				errors = err.response.data.errors;
+			else if(err.response.data.message.includes('registrado')) {
+				resetErrors();
+				erroresEstudiante = {
+					run: ['Este rut ya se encuentra registrado']
+				};
 			}
-		});
+			
+			toast.error('Error al guardar. Verifica que todos los campos estén rellenos correctamente');
+		})
 	}
 
 	function handleErrorsChange() {
@@ -153,20 +163,20 @@
 			</div>
 		</header>
 
-		<StudentFields bind:estudiante={$form.estudiante} {cursos} errors={erroresEstudiante} />
+		<StudentFields bind:estudiante={form.estudiante} {cursos} errors={erroresEstudiante} />
 		<GuardianFields
-			bind:apoderado={$form.apoderado_titular}
+			bind:apoderado={form.apoderado_titular}
 			type="titular"
 			errors={erroresApoderadoTitular}
 		/>
 		<GuardianFields
-			bind:apoderado={$form.apoderado_suplente}
+			bind:apoderado={form.apoderado_suplente}
 			type="suplente"
 			errors={erroresApoderadoSuplente}
 		/>
-		<ParentFields bind:parent={$form.madre} type="madre" errors={erroresMadre} />
-		<ParentFields bind:parent={$form.padre} type="padre" errors={erroresPadre} />
-		<SubstituteFields bind:suplentes={$form.suplentes} errors={erroresSuplentes} />
+		<ParentFields bind:parent={form.madre} type="madre" errors={erroresMadre} />
+		<ParentFields bind:parent={form.padre} type="padre" errors={erroresPadre} />
+		<SubstituteFields bind:suplentes={form.suplentes} errors={erroresSuplentes} />
 
 		<footer class="footer-estudiante">
 			<p>Firma Apoderado</p>

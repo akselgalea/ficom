@@ -22,17 +22,16 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
-    Inertia::setRootView('layouts.inertia');
-    return Inertia::render('Welcome');
-});
-
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/', function () {
+        Inertia::setRootView('layouts.inertia');
+        return Inertia::render('Welcome');
+    });
+    
     Route::prefix('registros')->group(function () {
         Route::get('/subir', function () {
             return view('registros.subir');

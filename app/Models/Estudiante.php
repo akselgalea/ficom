@@ -203,6 +203,7 @@ class Estudiante extends Model
             'estudiante.apellido_materno' => 'apellido materno',
             'estudiante.run' => 'run',
             'estudiante.edad' => 'edad',
+            'estudiante.nacionalidad' => 'nacionalidad',
             'estudiante.fecha_nacimiento' => 'fecha de nacimiento',
             'estudiante.enfermedades' => 'enfermedades y contraindicaciones',
             'estudiante.persona_emergencia' => 'remitir a',
@@ -298,7 +299,7 @@ class Estudiante extends Model
             $this->messages(),
             $this->attributes()
         );
-
+        
         try {
             Rut::parse($req->estudiante['run'])->validate();
             $rut = Rut::parse($req->estudiante['run'])->format(Rut::FORMAT_ESCAPED);
@@ -337,10 +338,11 @@ class Estudiante extends Model
             $message = "RUT Incorrecto";
             return ['status' => 400, 'message' => $message];
         } catch (Exception $e) {
-          dd($e);
             $message = 'Ha ocurrido un error';
+
             if (str_contains($e->getMessage(), 'apoderado'))
                 $message = $e->getMessage();
+
             if (str_contains($e->getMessage(), 'estudiantes_rut_unique'))
                 $message = 'Este estudiante ya se encuentra registrado';
 
