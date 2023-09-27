@@ -17,12 +17,15 @@ class RegisterAction
      */
     public function handle(Request $request, Closure $next)
     {
-      if($request->method() == 'GET') return $next($request);
+      if($this->shouldntRegister($request)) return $next($request);
       
       $response = $next($request);
-  
+      
       (new RegistroService)->store($request->path(), $request->method(), $request->all(), $response, Auth()->user());
-
       return $response;
-    } 
+    }
+
+    private function shouldntRegister($request) {
+      return $request->method() == 'GET' || $request->path() == 'logout' || $request->path() == 'login';
+    }
 }

@@ -95,37 +95,36 @@
         </div>
     </nav>
 
-    <main class="py-4 main-container">
-        {{-- Mensajes de alerta de las respuestas del controlador --}}
-        @php if(session('res')) $res = session('res'); @endphp
-        
-        @if (isset($res))
-            @if($res['status'] == 200)
-                <div class="alert alert-success">
-                    {{ $res['message'] }}
-                </div>
-            @elseif($res['status'] == 400)
-                <div class="alert alert-danger">
-                    {{ $res['message'] }}
-                </div>
-            @endif
-            @php session()->forget('res'); @endphp
-        @endif
-
-        {{--
-            Mensaje de alerta cuando el usuario no tiene permisos para acceder a una ruta 
-                Vease el middleware CheckRole
-        --}}
-        @if (session('redirectMessage'))
-            <div class="alert alert-info" role="alert">
-                {{ session('redirectMessage') }}
+    {{-- Mensajes de alerta de las respuestas del controlador --}}
+    @php if(session('res')) $res = session('res'); @endphp
+    
+    @if (isset($res))
+        @if($res['status'] == 200)
+            <div class="alert alert-success">
+                {{ $res['message'] }}
             </div>
-
-            @php session()->forget('redirectMessage'); @endphp
+        @elseif($res['status'] == 400)
+            <div class="alert alert-danger">
+                {{ $res['message'] }}
+            </div>
         @endif
+        @php session()->forget('res'); @endphp
+    @endif
 
-        @inertia
-    </main>
+    {{--
+        Mensaje de alerta cuando el usuario no tiene permisos para acceder a una ruta 
+            Vease el middleware CheckRole
+    --}}
+    @if (session('redirectMessage'))
+        <div class="alert alert-info" role="alert">
+            {{ session('redirectMessage') }}
+        </div>
+
+        @php session()->forget('redirectMessage'); @endphp
+    @endif
+
+    @inertia
+    
     <footer class="footer">
       © Copyright Colegio Simón Bolívar
     </footer>

@@ -10,6 +10,7 @@ use App\Http\Controllers\{
   NivelController,
   UserController
 };
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +24,8 @@ use App\Http\Controllers\{
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    Inertia::setRootView('layouts.inertia');
+    return Inertia::render('Welcome');
 });
 
 Auth::routes();
