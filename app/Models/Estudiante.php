@@ -290,7 +290,7 @@ class Estudiante extends Model
     public function store($req)
     {   
         $hasApoderado = !empty($req->apoderado_titular);
-        $hasApoderadoSuplente = !empty($req->apoderado_suplente);
+        $hasApoderadoSuplente = true;
         $hasMadre = !empty($req->madre);
         $hasPadre = !empty($req->padre);
         
@@ -413,17 +413,21 @@ class Estudiante extends Model
     public function storePago($id, $req)
     {
         $estudiante = Estudiante::find($id);
+
         if(!$estudiante) return ['status' => 400, 'message' => 'No se encontro al estudiante'];
         if($estudiante->prioridad == 'prioritario') return ['status' => 400, 'message' => 'Los estudiantes prioritarios no deben pagar'];
-        
+
+        $esRecibo = $req->documento === 'recibo';
+
         $pago = new Pago;
-        $maxPago = $estudiante->totalAPagar($req->anio, $req->mes, $req->total);
+        $minPago = $esRecibo ? $req->total : 1;
+        $maxPago =  $estudiante->totalAPagar($req->anio, $req->mes, $req->total);
         
         if($maxPago <= 0) return ['status' => 400, 'message' => 'Este mas ya ha sido pagado completamente'];
 
         $req->validate(
-            $pago->rules($req->num_documento, $maxPago),
-            $pago->messages($req->mes, $maxPago),
+            $pago->rules($req->num_documento, $maxPago, $minPago),
+            $pago->messages($req->mes, $maxPago, $esRecibo),
             $pago->attributes()
         );
         

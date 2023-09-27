@@ -31,7 +31,7 @@
               <td class="font-weight-bold">{{ retirado($es->deleted_at, $index) }}</td>
               <td>{{ $es->apellidos }}</td>
               <td>{{ $es->nombres }}</td>
-              <td>{{ $es->rut . '-' . $es->dv }}%</td>
+              <td>{{ $es->rut . '-' . $es->dv }}</td>
               <td>{{ $es->rut }}</td>
               <td>{{ $es->rut . 'A' }}</td>
               <td>{{ $es->es_nuevo ? 'X' : '' }}</td>

@@ -23,8 +23,8 @@
 
 	const prioridadClasses = {
 		'alumno regular': 'table-light',
-		prioritario: 'table-danger',
-		'nuevo prioritario': 'table-primary'
+		prioritario: 'table-primary',
+		'nuevo prioritario': 'table-danger'
 	};
 </script>
 

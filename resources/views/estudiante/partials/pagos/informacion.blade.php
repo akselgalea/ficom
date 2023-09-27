@@ -5,30 +5,30 @@
 
     <h2>Información del estudiante</h2>
     <div class="form-group mb-3 col-4">
-        <label for="monto_mensual" class="form-label">Estudiante</label>
+        <span class="form-span">Estudiante</span>
         <p class="form-control">{{ $estudiante->nombres . ' ' . $estudiante->apellidos }}</p>
     </div>
     
     <div class="form-group mb-3 col-4">
-        <label for="monto_mensual" class="form-label">Curso</label>
+        <span class="form-span">Curso</span>
         <p class="form-control">{{ $estudiante->curso->curso . '-' . $estudiante->curso->paralelo }}</p>
     </div>
     
     <div class="form-group mb-3 col-4">
-        <label for="monto_mensual" class="form-label">Prioridad</label>
+        <span class="form-span">Prioridad</span>
         <p class="form-control flc">{{ $estudiante->prioridad }}</p>
     </div>
 
     <div class="form-group mb-3 col-4">
-        <label for="monto_mensual" class="form-label">Monto mensualidad</label>
+        <span class="form-span">Monto mensualidad</span>
         <p class="form-control">{{ toCLP($estudiante->curso->nivel->arancel) }}</p>
     </div>
     <div class="form-group mb-3 col-4">
-        <label for="beca" class="form-label">% Beca</label>
+        <span class="form-span">% Beca</span>
         <p class="form-control">{{ ! is_null($estudiante->beca) ? $estudiante->beca->descuento : 'No tiene beca' }}</p>
     </div>
     <div class="form-group mb-3 col-4">
-        <label for="exencion" class="form-label">Total a pagar</label>
+        <span class="form-span">Total a pagar</span>
         <p class="form-control">{{ toCLP($total) }}</p>
     </div>
 </div>

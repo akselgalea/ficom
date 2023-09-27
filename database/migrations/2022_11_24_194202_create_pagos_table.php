@@ -17,12 +17,12 @@ return new class extends Migration
             $table->id();
             $table->enum('mes', ['matricula', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']);
             $table->string('anio');
-            $table->enum('documento', ['boleta', 'recibo']);
+            $table->enum('documento', ['boleta', 'recibo', 'vale vista']);
             $table->string('num_documento');
             $table->string('fecha_pago');
             $table->string('valor');
             $table->enum('forma', ['efectivo', 'cheque', 'transferencia']);
-            $table->text('observacion');
+            $table->text('observacion')->nullable();
             $table->bigInteger('estudiante_id')->unsigned();
             $table->timestamps();
             

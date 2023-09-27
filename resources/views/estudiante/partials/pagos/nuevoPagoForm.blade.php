@@ -45,6 +45,7 @@
             <option value="" selected disabled hidden>Selecciona una opción</option>
             <option value="boleta"  @selected(old('documento') == 'boleta')>Boleta</option>
             <option value="recibo"  @selected(old('documento') == 'recibo')>Recibo</option>
+            <option value="vale vista"  @selected(old('documento') == 'vale vista')>Vale vista</option>
         </select>
 
         @error('documento')

@@ -182,13 +182,13 @@ class CursoSeeder extends Seeder
         $curso = new Curso([
             'curso'=> '4M',
             'paralelo' => 'A',
-            'nivel_id' => 3
+            'nivel_id' => 4
         ]);
         $curso->save();
         $curso = new Curso([
             'curso'=> '4M',
             'paralelo' => 'B',
-            'nivel_id' => 3
+            'nivel_id' => 4
         ]);
         $curso->save();
     }
