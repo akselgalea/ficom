@@ -3,13 +3,13 @@
 	import Layout from '../../layouts/layout.svelte';
 	import Pagination from '../../components/Pagination.svelte';
 
-	export let errors, estudiantes, perPage, cursos;
+	export let errors, estudiantes, cursos;
 
 	const urlParams = new URLSearchParams(window.location.search);
-	let search, curso, page, localPerPage;
+	let search, curso, page, perPage;
 
 	onMount(() => {
-		localPerPage = String(perPage);
+		perPage = urlParams.get('perPage');
 		search = urlParams.get('search');
 		curso = Number(urlParams.get('curso')) || 'todos';
 		page = urlParams.get('page') ?? '1';
@@ -38,7 +38,7 @@
 		</div>
 		<form class="buscador">
 			<div>
-				<select class="form-select" name="perPage" id="perPage" bind:value={localPerPage}>
+				<select class="form-select" name="perPage" id="perPage" bind:value={perPage}>
 					<option value="10">10</option>
 					<option value="15">15</option>
 					<option value="20">20</option>

@@ -38,7 +38,7 @@ class Pago extends Model
         return $this->belongsTo(Estudiante::class);
     }
 
-    public function rules($id = null, $maxPago, $minPago): array {
+    static function rules($id = null, $maxPago, $minPago): array {
         return [
             'mes' => 'required',
             'anio' => 'required',
@@ -51,7 +51,7 @@ class Pago extends Model
         ];
     }
 
-    public function messages($mes, $maxPago, $esRecibo): array {
+    static function messages($mes, $maxPago, $esRecibo): array {
         return [
             'num_documento.unique' => 'Este documento ya se encuentra registrado',
             'required' => 'El campo :attribute es obligatorio',
@@ -62,7 +62,7 @@ class Pago extends Model
         ];
     }
 
-    public function attributes(): array {
+    static function attributes(): array {
         return [
             'mes',
             'anio' => 'año',

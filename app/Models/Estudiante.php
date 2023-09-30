@@ -7,12 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Mail;
 use Freshwork\ChileanBundle\Exceptions\InvalidFormatException;
 use Freshwork\ChileanBundle\Rut;
 use Exception;
 use Illuminate\Validation\Rule;
-use App\Mail\RecordatorioPago;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Estudiante extends Model
@@ -138,8 +136,8 @@ class Estudiante extends Model
         ];
     }
 
-    private function rules($hasApoderado, $hasApoderadoSuplente, $hasMadre, $hasPadre, $id = null): array {
-        $rules = [
+    static function rules($hasApoderado, $hasApoderadoSuplente, $hasMadre, $hasPadre, $id = null): array {
+        return [
             'estudiante.nombres' => 'required|max:255',
             'estudiante.apellidos' => 'sometimes|required|max:255',
             'estudiante.apellido_paterno' => 'sometimes|required|max:255',
@@ -182,11 +180,9 @@ class Estudiante extends Model
             'suplentes.*.email' => 'required|email',
             'suplentes.*.direccion' => 'required|max:255',
         ];
-        
-        return $rules;
     }
 
-    private function messages(): array {
+    static function messages(): array {
         return [
             'required' => 'El campo :attribute es obligatorio',
             'email_institucional.unique' => 'Este correo ya esta en uso',
@@ -195,7 +191,7 @@ class Estudiante extends Model
         ];
     }
 
-    private function attributes(): array {
+    static function attributes(): array {
         return [
             'estudiante.nombres' => 'nombres',
             'estudiante.apellidos' => 'apellidos',
@@ -239,228 +235,6 @@ class Estudiante extends Model
             'suplentes.*.email' => 'email',
             'suplentes.*.direccion' => 'direccion'
         ];
-    }
-
-    public function index($req)
-    {
-        $perPage = request('perPage', 10);
-        $curso = request('curso', 'todos');
-        //Busqueda y firtrado por Temas
-        if ($curso != 'todos') {
-            if ($req->search) {
-
-                $estudiantes = Estudiante::with('curso')
-                    ->searchByName($req->search)
-                    ->searchBySurname($req->search)
-                    ->searchByRut($req->search)
-                    ->searchByCurso($curso)
-                    ->paginate($perPage);
-
-                return ['estudiantes' => $estudiantes, 'perPage' => $perPage];
-            }
-
-            return ['estudiantes' => Estudiante::with(['curso'])->where('curso_id', $curso)->paginate($perPage), 'perPage' => $perPage];
-        }
-
-        //Solo Busqueda
-        if ($req->search) {
-            return [
-                'estudiantes' => Estudiante::with(['curso'])
-                    ->searchByName($req->search)
-                    ->searchBySurname($req->search)
-                    ->searchByRut($req->search)
-                    ->paginate($perPage),
-                'perPage' => $perPage
-            ];
-        }
-
-        return ['estudiantes' => Estudiante::with('curso')->paginate($perPage), 'perPage' => $perPage];
-    }
-
-    public function show($id)
-    {
-        $estudiante = Estudiante::with('curso', 'beca')->findOrFail($id);
-        $estudiante["apoderado_titular"] = $estudiante->apoderadoTitular()->first();
-        $estudiante["apoderado_suplente"] = $estudiante->apoderadoSuplente()->first();
-        $estudiante->recordatorioDePago($id);
-
-        return ['estudiante' => $estudiante, 'cursos' => Curso::all(), 'becas' => Beca::all()];
-    }
-
-    public function store($req)
-    {   
-        $hasApoderado = !empty($req->apoderado_titular);
-        $hasApoderadoSuplente = true;
-        $hasMadre = !empty($req->madre);
-        $hasPadre = !empty($req->padre);
-        
-        $req->validate(
-            $this->rules($hasApoderado, $hasApoderadoSuplente, $hasMadre, $hasPadre),
-            $this->messages(),
-            $this->attributes()
-        );
-        
-        try {
-            Rut::parse($req->estudiante['run'])->validate();
-            $rut = Rut::parse($req->estudiante['run'])->format(Rut::FORMAT_ESCAPED);
-            $rut = Rut::parse($rut)->toArray();
-
-            //Estudiante
-            $estudiante = new Estudiante();
-            $estudiante->nombres = $req->estudiante['nombres'];
-            $estudiante->apellidos = $req->estudiante['apellido_paterno'] . ' ' . $req->estudiante['apellido_materno'];
-            $estudiante->rut = $rut[0];
-            $estudiante->dv = $rut[1];
-            $estudiante->es_nuevo = 1;
-            $estudiante->edad = $req->estudiante['edad'];
-            $estudiante->genero = $req->estudiante['genero'];
-            $estudiante->direccion = $req->estudiante['direccion'];
-            $estudiante->nacionalidad = $req->estudiante['nacionalidad'];
-            $estudiante->curso_id = $req->estudiante['nivel'];
-            $estudiante->prioridad = $req->estudiante['prioridad'];
-            $estudiante->fecha_nacimiento = $req->estudiante['fecha_nacimiento'];
-            $estudiante->email = $req->estudiante['email'];
-            $estudiante->enfermedades = $req->estudiante['enfermedades'];
-            $estudiante->persona_emergencia = $req->estudiante['persona_emergencia'];
-            $estudiante->telefono_emergencia = $req->estudiante['telefono_emergencia'];
-            $estudiante->apoderados = [
-              'apoderado_titular' => $req->apoderado_titular,
-              'apoderado_suplente' => empty($req->apoderado_suplente) ? null : $req->apoderado_suplente,
-              'madre' => empty($req->madre) ? null : $req->madre,
-              'padre' => empty($req->padre) ? null : $req->padre,
-              'suplentes' => $req->suplentes
-            ];
-
-            $estudiante->save();
-
-            return ['status' => 200, 'message' => 'Estudiante creado con exito!'];
-        } catch (InvalidFormatException $e) {
-            $message = "RUT Incorrecto";
-            return ['status' => 400, 'message' => $message];
-        } catch (Exception $e) {
-            $message = 'Ha ocurrido un error';
-
-            if (str_contains($e->getMessage(), 'apoderado'))
-                $message = $e->getMessage();
-
-            if (str_contains($e->getMessage(), 'estudiantes_rut_unique'))
-                $message = 'Este estudiante ya se encuentra registrado';
-
-            return ['status' => 400, 'message' => $message];
-        }
-    }
-
-    public function actualizar($id, $request)
-    {
-        $hasApoderado = !empty($request->apoderado_titular);
-        $hasApoderadoSuplente = !empty($request->apoderado_suplente);
-        $hasMadre = !empty($request->madre);
-        $hasPadre = !empty($request->padre);       
-
-        $request->validate(
-            $this->rules($hasApoderado, $hasApoderadoSuplente, $hasMadre, $hasPadre, $id),
-            $this->messages(),
-            $this->attributes()
-        );
-
-        try {
-            $estudiante = Estudiante::findOrFail($id);
-            Rut::parse($request->estudiante['run'])->validate();
-            $rut = Rut::parse($request->estudiante['run'])->format(Rut::FORMAT_ESCAPED);
-            $rut = Rut::parse($rut)->toArray();
-
-            $estudiante->apellidos = $request->estudiante['apellido_paterno'] . ' ' . $request->estudiante['apellido_materno'];
-            $estudiante->nombres = $request->estudiante['nombres'];
-            $estudiante->rut = $rut[0];
-            $estudiante->dv = $rut[1];
-            $estudiante->prioridad = $request->estudiante['prioridad'];
-            if ($estudiante->prioridad == 'prioritario') $estudiante->beca()->dissociate();
-            $estudiante->curso_id = $request->estudiante['nivel'];
-            $estudiante->edad = $request->estudiante['edad'];
-            $estudiante->genero = $request->estudiante['genero'];
-            $estudiante->nacionalidad = $request->estudiante['nacionalidad'];
-            $estudiante->direccion = $request->estudiante['direccion'];
-            $estudiante->telefono = $request->estudiante['telefono'];
-            $estudiante->fecha_nacimiento = $request->estudiante['fecha_nacimiento'];
-            $estudiante->email = $request->estudiante['email'];
-            $estudiante->enfermedades = $request->estudiante['enfermedades'];
-            $estudiante->persona_emergencia = $request->estudiante['persona_emergencia'];
-            $estudiante->telefono_emergencia = $request->estudiante['telefono_emergencia'];
-            $estudiante->apoderados = [
-              'apoderado_titular' => $request->apoderado_titular,
-              'apoderado_suplente' => empty($request->apoderado_suplente) ? null : $request->apoderado_suplente,
-              'madre' => empty($request->madre) ? null : $request->madre,
-              'padre' => empty($request->padre) ? null : $request->padre,
-              'suplentes' => $request->suplentes
-            ];
-
-            $estudiante->save();
-            return ['status' => 200, 'message' => 'Estudiante actualizado con exito!'];
-        } catch (Exception $e) {
-            return ['status' => 400, 'message' => $e->getMessage()];
-        }
-    }
-
-    public function apoderadoRemove($id, $apoderado) {
-        try {
-            Estudiante::findOrFail($id)->apoderados()->detach($apoderado);
-            return redirect()->back()->with('res', ['status' => 200, 'message' => 'Apoderado removido del estudiante con exito']);
-        } catch(Exception $e) {
-            return redirect()->back()->with('res', ['status' => 400, 'message' => 'No se pudo remover al apoderado']);
-        }
-    }
-
-    public function storePago($id, $req)
-    {
-        $estudiante = Estudiante::find($id);
-
-        if(!$estudiante) return ['status' => 400, 'message' => 'No se encontro al estudiante'];
-        if($estudiante->prioridad == 'prioritario') return ['status' => 400, 'message' => 'Los estudiantes prioritarios no deben pagar'];
-
-        $esRecibo = $req->documento === 'recibo';
-
-        $pago = new Pago;
-        $minPago = $esRecibo ? $req->total : 1;
-        $maxPago =  $estudiante->totalAPagar($req->anio, $req->mes, $req->total);
-        
-        if($maxPago <= 0) return ['status' => 400, 'message' => 'Este mas ya ha sido pagado completamente'];
-
-        $req->validate(
-            $pago->rules($req->num_documento, $maxPago, $minPago),
-            $pago->messages($req->mes, $maxPago, $esRecibo),
-            $pago->attributes()
-        );
-        
-        try {
-            $estudiante->pagos()->create($req->all());
-            return ['status' => 200, 'message' => 'Pago registrado con éxito'];
-        } catch (Exception $e) {
-            return ['status' => 400, 'message' => 'Ha ocurrido un error'];
-        }
-    }
-
-    public function becaUpdate($id, $req)
-    {
-        try {
-            $estudiante = Estudiante::find($id);
-            if ($estudiante->prioridad == 'prioritario')
-                return ['status' => 400, 'message' => 'No se puede asignar becas a un estudiante prioritario'];
-
-            $estudiante->beca()->associate($req->beca_id)->save();
-            return ['status' => 200, 'message' => 'Beca asignada con éxito'];
-        } catch (Exception $e) {
-            return ['status' => 400, 'message' => 'Ha ocurrido un error', 'datos' => $req->except('_token')];
-        }
-    }
-
-    public function becaDelete($id)
-    {
-        try {
-            Estudiante::find($id)->beca()->dissociate()->save();
-            return ['status' => 200, 'message' => 'Beca removida con éxito'];
-        } catch (Exception $e) {
-            return ['status' => 400, 'message' => 'Ha ocurrido un error'];
-        }
     }
 
     public function pagosPorAnio($anio)
@@ -635,25 +409,6 @@ class Estudiante extends Model
         ];
     }
 
-    public function getMes($mes) {
-        $meses = [
-            '01' => 'enero',
-            '02' => 'febrero',
-            '03' => 'marzo',
-            '04' => 'abril',
-            '05' => 'mayo',
-            '06' => 'junio',
-            '07' => 'julio',
-            '08' => 'agosto',
-            '09' => 'septiembre',
-            '10' => 'octubre',
-            '11' => 'noviembre',
-            '12' => 'diciembre',
-        ];
-
-        return $meses[$mes];
-    }
-
     public function getArancel() {
         return $this->curso->nivel->arancel;
     }
@@ -694,41 +449,6 @@ class Estudiante extends Model
         $totalPagado = $this->totalPagadoMes($this->pagosMes(date('y'), $mes));
 
         return $totalAPagar - $totalPagado;
-    }
-
-    public function recordatorioDePago($id) {
-        try {
-            $estudiante = Estudiante::findOrFail($id);
-    
-            $totalAPagar = $estudiante->getTotalAPagarPorMes();
-            
-            if($totalAPagar == 0) 
-                return false;
-            
-            $mes = $this->getMes(date('m'));
-            $apoderado = $estudiante->getApoderado();
-    
-            if(!$apoderado) 
-                return false;
-    
-            $datosPago = [
-                'mes' => $mes,
-                'arancel' => $estudiante->curso->nivel->arancel,
-                'totalDescuentos' => $estudiante->getDescuentos(),
-                'abonado' => $estudiante->totalPagadoMes($estudiante->pagosMes(date('y'), $mes)),
-                'totalPagar' => $estudiante->getTotalAPagarPorMes()
-            ];
-    
-            Mail::mailer("smtp")->to($apoderado->email)->send(new RecordatorioPago($estudiante, $apoderado, $datosPago));
-    
-            return true;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    public function getApoderado() {
-        return $this->apoderadoTitular()->first() ?? $this->apoderadoSuplente()->first();
     }
 
     public function montoAnual() {

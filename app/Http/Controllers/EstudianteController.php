@@ -12,14 +12,18 @@ use Symfony\Component\Process\Process;
 use Inertia\Inertia;
 use App\Exports\RegistroEscolarExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Services\EstudianteService;
 use Exception;
 
 class EstudianteController extends Controller
 {
     private $estud;
-    public function __construct(Estudiante $estud)
+    private $studentService;
+
+    public function __construct(Estudiante $estud, EstudianteService $studentService)
     {
         $this->estud = $estud;
+        $this->studentService = $studentService;
     }
 
     /**
@@ -28,9 +32,9 @@ class EstudianteController extends Controller
     public function index(Request $req)
     {   
         Inertia::setRootView('layouts.inertia');
-        $data = $this->estud->index($req);
+        $estudiantes = $this->studentService->index($req, request('perPage', 10), request('curso', 'todos'));
 
-        return Inertia::render('Estudiante/Index', ['estudiantes' => $data['estudiantes'], 'perPage' => $data['perPage'], 'cursos' => Curso::all()]);
+        return Inertia::render('Estudiante/Index', ['estudiantes' => $estudiantes, 'cursos' => Curso::all()]);
     }
 
     /**
@@ -40,7 +44,7 @@ class EstudianteController extends Controller
      */
     public function store(Request $req)
     {  
-        $result = $this->estud->store($req);
+        $result = $this->studentService->store($req);
 
         if(isset($result['status']))
             return response()->json(['message' => $result['message']], $result['status']);
@@ -55,15 +59,9 @@ class EstudianteController extends Controller
      */
     public function show($id)
     {
-        Inertia::setRootView('layouts.inertia');
-        $estudiante = $this->estud->findOrFail($id);
-        $estudiante->nivel = $estudiante->curso_id;
-        $apellidos = explode(' ', $estudiante->apellidos);
-        $estudiante->apellido_paterno = $apellidos[0];
-        $estudiante->apellido_materno = $apellidos[1] ?? '';
-        $estudiante->run = $estudiante->rut . '-' . $estudiante->dv;   
-
-        return Inertia::render('Estudiante/Actualizar', ['cursos' => Curso::all(), 'estudiante' => $estudiante]);
+        Inertia::setRootView('layouts.inertia'); 
+        
+        return Inertia::render('Estudiante/Actualizar', ['estudiante' => $this->studentService->perfil($id), 'cursos' => Curso::all(), 'becas' => Beca::all()]);
     }
 
     public function getEstudiantesNuevos(Request $req) {
@@ -89,8 +87,7 @@ class EstudianteController extends Controller
      */
     public function edit($id)
     {
-        $estudiante = $this->estud->findOrFail($id);
-        return Inertia::render('Estudiante/Actualizar', ['cursos' => Curso::all(), 'estudiante' => $estudiante]);
+        return Inertia::render('Estudiante/Actualizar', ['estudiante' => $this->studentService->findbyId($id), 'cursos' => Curso::all()]);
     }
 
     /**
@@ -101,7 +98,7 @@ class EstudianteController extends Controller
      */
     public function update($id, Request $req)
     {
-        return redirect()->back()->with('res', $this->estud->actualizar($id, $req));
+        return redirect()->back()->with('res', $this->studentService->update($id, $req));
     }
 
     /**
@@ -111,12 +108,8 @@ class EstudianteController extends Controller
      */
     public function destroy($id)
     {
-      try {
-        $this->estud->findOrFail($id)->delete();
-        return response()->json(['message' => 'Usuario eliminado con éxito'], 200);
-      } catch(Exception $e) {
-        return response()->json(['message' => $e->getMessage()], 500);
-      }
+        $response = $this->studentService->delete($id);
+        return response()->json(['message' => $response['message']], $response['status']);
     }
 
 
@@ -128,28 +121,24 @@ class EstudianteController extends Controller
      * @param  \Illuminate\Http\Request  $request
      */
     public function storePago($id, Request $req) {
-        return redirect()->back()->with('res', $this->estud->storePago($id, $req));
+        return redirect()->back()->with('res', $this->studentService->pagoStore($id, $req));
     }
 
     public function pagos($id)
     {
-        $estudiante = $this->estud::with('curso', 'beca')->findOrFail($id);
-        $estudiante->pagos_anio = $estudiante->pagosPorAnio('2023');
-        $estudiante->apoderado_titular = $estudiante->apoderadoTitular()->first();
-
-        return view('estudiante.pagos', ['estudiante' => $estudiante]);
+        return view('estudiante.pagos', ['estudiante' => $this->studentService->pagosYear($id)]);
     }
 
     public function becaEdit($id) {
-        return view('estudiante.beca', ['estudiante' => $this->estud::with('beca', 'curso')->find($id), 'becas' => Beca::all()]);
+        return view('estudiante.beca', ['estudiante' => $this->studentService->findById($id), 'becas' => Beca::all()]);
     }
 
     public function becaUpdate($id, Request $req) {
-        return redirect()->back()->with('res', $this->estud->becaUpdate($id, $req));
+        return redirect()->back()->with('res', $this->studentService->becaUpdate($id, $req));
     }
 
     public function becaDelete($id) {
-        return redirect()->back()->with('res', $this->estud->becaDelete($id));
+        return redirect()->back()->with('res', $this->studentService->becaDelete($id));
     }
 
     public function apoderadoRemove($id, $apoderado) {
@@ -179,7 +168,8 @@ class EstudianteController extends Controller
                 $file = $request->file('file');
                 $a = Storage::disk('local')->put('docs',$file);
                 $process = new Process([
-                    'python',
+                    'C:\Users\aksel\AppData\Local\Programs\Python\Python311\python.exe',
+                    // 'python',
                     // 'python3', // para linux
                     storage_path('app/xml/dataConverter.py'),
                     storage_path('app/'.$a)
@@ -197,7 +187,8 @@ class EstudianteController extends Controller
                 $file = $request->file('file');
                 $a = Storage::disk('local')->put('docs',$file);
                 $process = new Process([
-                    'python',
+                    'C:\Users\aksel\AppData\Local\Programs\Python\Python311',
+                    // 'python',
                     // 'python3', // para linux
                     storage_path('app/xml/dataConverter2.py'),
                     storage_path('app/'.$a)
