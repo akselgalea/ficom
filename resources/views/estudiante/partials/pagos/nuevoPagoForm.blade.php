@@ -31,6 +31,9 @@
             <option value="2022" @selected(old('anio') == '2022' || now()->year == '2022')>2022</option>
             <option value="2023" @selected(old('anio') == '2023' || now()->year == '2023')>2023</option>
             <option value="2024" @selected(old('anio') == '2024' || now()->year == '2024')>2024</option>
+            <option value="2025" @selected(old('anio') == '2025' || now()->year == '2025')>2025</option>
+            <option value="2026" @selected(old('anio') == '2026' || now()->year == '2026')>2026</option>
+            <option value="2027" @selected(old('anio') == '2027' || now()->year == '2027')>2027</option>
         </select>
 
         @error('anio')
@@ -45,7 +48,6 @@
             <option value="" selected disabled hidden>Selecciona una opción</option>
             <option value="boleta"  @selected(old('documento') == 'boleta')>Boleta</option>
             <option value="recibo"  @selected(old('documento') == 'recibo')>Recibo</option>
-            <option value="vale vista"  @selected(old('documento') == 'vale vista')>Vale vista</option>
         </select>
 
         @error('documento')
@@ -91,6 +93,7 @@
             <option value="efectivo" @selected(old('forma') == 'efectivo')>Efectivo</option>
             <option value="cheque" @selected(old('forma') == 'cheque')>Cheque</option>
             <option value="transferencia" @selected(old('forma') == 'transferencia')>Transferencia</option>
+            <option value="vale vista"  @selected(old('forma') == 'vale vista')>Vale vista</option>
         </select>
 
         @error('forma')

@@ -179,8 +179,8 @@ class EstudianteController extends Controller
                 $file = $request->file('file');
                 $a = Storage::disk('local')->put('docs',$file);
                 $process = new Process([
-                    'python3', // para linux
-                    //'python', //para windows
+                    'python',
+                    // 'python3', // para linux
                     storage_path('app/xml/dataConverter.py'),
                     storage_path('app/'.$a)
                 ]);
@@ -197,8 +197,8 @@ class EstudianteController extends Controller
                 $file = $request->file('file');
                 $a = Storage::disk('local')->put('docs',$file);
                 $process = new Process([
-                    'python3', // para linux
-                    //'python', //para windows
+                    'python',
+                    // 'python3', // para linux
                     storage_path('app/xml/dataConverter2.py'),
                     storage_path('app/'.$a)
                 ]);
