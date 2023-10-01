@@ -15,9 +15,9 @@ class NivelSeeder extends Seeder
      */
     public function run()
     {
-        Nivel::create(['nombre' => 'Enseñanza Pre-básica', 'matricula' => 100000, 'arancel' => 30000]);
-        Nivel::create(['nombre' => 'Enseñanza Básica', 'matricula' => 150000, 'arancel' => 50000]);
-        Nivel::create(['nombre' => 'Enseñanza Media', 'matricula' => 200000, 'arancel' => 60000]);
-        Nivel::create(['nombre' => 'Cuarto Medio', 'matricula' => 200000, 'arancel' => 60000]);
+        Nivel::create(['nombre' => 'Enseñanza Pre-básica', 'matricula' => 100000, 'arancel' => 300000]);
+        Nivel::create(['nombre' => 'Enseñanza Básica', 'matricula' => 150000, 'arancel' => 500000]);
+        Nivel::create(['nombre' => 'Enseñanza Media', 'matricula' => 200000, 'arancel' => 600000]);
+        Nivel::create(['nombre' => 'Cuarto Medio', 'matricula' => 200000, 'arancel' => 650000]);
     }
 }

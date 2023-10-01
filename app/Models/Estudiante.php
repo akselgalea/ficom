@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+
 class Estudiante extends Model
 {
     use SoftDeletes, HasFactory;
@@ -239,21 +240,27 @@ class Estudiante extends Model
 
     public function pagosPorAnio($anio)
     {
-        $pagos_anio = $this->pagos()->where('anio', $anio)->oldest()->get();
+        $pagos_anio = $this->pagos()->where('anio', $anio)->get();
 
-        return [
-            'matricula' => $pagos_anio->where('mes', 'matricula'),
-            'marzo' => $pagos_anio->where('mes', 'marzo'),
-            'abril' => $pagos_anio->where('mes', 'abril'),
-            'mayo' => $pagos_anio->where('mes', 'mayo'),
-            'junio' => $pagos_anio->where('mes', 'junio'),
-            'julio' => $pagos_anio->where('mes', 'julio'),
-            'agosto' => $pagos_anio->where('mes', 'agosto'),
-            'septiembre' => $pagos_anio->where('mes', 'septiembre'),
-            'octubre' => $pagos_anio->where('mes', 'octubre'),
-            'noviembre' => $pagos_anio->where('mes', 'noviembre'),
-            'diciembre' => $pagos_anio->where('mes', 'diciembre')
+        $meses = [
+            'matricula' => [],
+            'marzo' => [],
+            'abril' => [],
+            'mayo' => [],
+            'junio' => [],
+            'julio' => [],
+            'agosto' => [],
+            'septiembre' => [],
+            'octubre' => [],
+            'noviembre' => [],
+            'diciembre' => []
         ];
+
+        foreach($pagos_anio as $pago) {
+            array_push($meses[$pago['mes']], $pago);
+        }
+
+        return $meses;
     }
 
     public function mesFaltante($pagos, $totalAPagar)
@@ -276,12 +283,14 @@ class Estudiante extends Model
         return $this->pagos()->where(['anio' => $year, 'mes' => $month])->get();
     }
 
-    public function totalPagadoMes($pagosMes) {
-        $total = 0;
-            foreach ($pagosMes as $pago)
-                $total += $pago->valor;
+    public function totalPagadoMes($year, $month) {
+        $pagos_mes = $this->pagos()
+            ->selectRaw('SUM(valor) as totalPagado')
+            ->where(['anio' => $year, 'mes' => $month])
+            ->groupBy('mes')
+            ->first();
 
-        return $total;
+        return $pagos_mes['totalPagado'];
     }
 
     /**
@@ -294,7 +303,7 @@ class Estudiante extends Model
         if($month == 'matricula')
             return $this->totalAPagarMatricula($year);
 
-        return $tAP - $this->totalPagadoMes($this->pagosMes($year, $month));
+        return $tAP - $this->totalPagadoMes($year, $month);
     }
 
     public function costoMatricula() {
@@ -310,7 +319,7 @@ class Estudiante extends Model
     public function totalAPagarMatricula($year) {
         $tAP = $this->costoMatricula();
 
-        return $tAP - $this->totalPagadoMes($this->pagosMes($year, 'matricula'));
+        return $tAP - $this->totalPagadoMes($year, 'matricula');
     }
 
     public function poseeRun()
@@ -419,10 +428,10 @@ class Estudiante extends Model
      * @return Integer cuanto tiene que pagar por mes
     */
     public function getTotalAPagarPorMes() {
-        $total = $this->getArancel();
+        $total = $this->curso->nivel->mensualidad;
         $descuentos = $this->getDescuentos();
 
-        if($descuentos >= 100) 
+        if($descuentos >= 100)
             return 0;
 
         return $total * (1 - number_format('0.'. $descuentos, 2));

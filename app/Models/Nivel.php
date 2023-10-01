@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Nivel extends Model
 {
     use HasFactory;
+    const MESES_A_PAGAR = 10;
 
     protected $table = 'niveles';
 
@@ -16,6 +17,10 @@ class Nivel extends Model
         'nombre',
         'matricula',
         'arancel'
+    ];
+
+    protected $appends = [
+        'mensualidad'
     ];
 
 
@@ -26,5 +31,13 @@ class Nivel extends Model
      */
     public function cursos(): HasMany {
         return $this->hasMany(Curso::class);
+    }
+
+    public function calcMensualidad() {
+        return ($this->arancel - $this->matricula) / self::MESES_A_PAGAR;
+    }
+
+    public function getMensualidadAttribute() {
+        return $this->calcMensualidad();
     }
 }

@@ -61,11 +61,14 @@ class EstudianteService
     }
 
     function pagosYear($id, $year = null) {
-        if(!$year) $year = date('y');
+        if(!$year) $year = date('Y');
         $estudiante = $this->findById($id);
-        $estudiante->pagos_anio = $estudiante->pagosPorAnio($year);
 
-        return $estudiante;
+        return [
+            'estudiante' => $estudiante,
+            'pagos' => $estudiante->pagosPorAnio($year),
+            'mensualidad' => $estudiante->getTotalAPagarPorMes(),
+        ];
     }
 
     function pagoStore($id, $req) {

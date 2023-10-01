@@ -76,7 +76,7 @@ class EstudianteController extends Controller
      */
     public function create(Request $req)
     {
-        Inertia::setRootView('layouts.inertia'); 
+        Inertia::setRootView('layouts.inertia');
         return Inertia::render('Estudiante/Crear', ['cursos' => Curso::all()]);
     }
 
@@ -87,6 +87,7 @@ class EstudianteController extends Controller
      */
     public function edit($id)
     {
+        Inertia::setRootView('layouts.inertia');
         return Inertia::render('Estudiante/Actualizar', ['estudiante' => $this->studentService->findbyId($id), 'cursos' => Curso::all()]);
     }
 
@@ -121,12 +122,14 @@ class EstudianteController extends Controller
      * @param  \Illuminate\Http\Request  $request
      */
     public function storePago($id, Request $req) {
-        return redirect()->back()->with('res', $this->studentService->pagoStore($id, $req));
+        $result = $this->studentService->pagoStore($id, $req);
+        return response()->json(['message' => $result['message']], $result['status']);
     }
 
     public function pagos($id)
     {
-        return view('estudiante.pagos', ['estudiante' => $this->studentService->pagosYear($id)]);
+        Inertia::setRootView('layouts.inertia');
+        return Inertia::render('Estudiante/Pagos/Index', $this->studentService->pagosYear($id));
     }
 
     public function becaEdit($id) {

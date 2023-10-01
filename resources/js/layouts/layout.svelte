@@ -15,6 +15,8 @@
 	<div class={`container ${ isWelcome ? '' : 'card' }`}>
 		<slot />
 	</div>
+
+	<slot name="nocard" />
 </main>
 
 <style>

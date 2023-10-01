@@ -122,7 +122,7 @@
 
         @php session()->forget('redirectMessage'); @endphp
     @endif
-
+    
     @inertia
     
     <footer class="footer">
