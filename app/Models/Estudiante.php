@@ -285,12 +285,12 @@ class Estudiante extends Model
 
     public function totalPagadoMes($year, $month) {
         $pagos_mes = $this->pagos()
-            ->selectRaw('SUM(valor) as totalPagado')
+            ->selectRaw('SUM(valor) as total')
             ->where(['anio' => $year, 'mes' => $month])
             ->groupBy('mes')
             ->first();
-
-        return $pagos_mes['totalPagado'];
+        
+        return $pagos_mes['total'] ?? 0;
     }
 
     /**
@@ -455,7 +455,7 @@ class Estudiante extends Model
 
     public function getTotalAPagarMes($mes) {
         $totalAPagar = $this->getTotalAPagarPorMes();
-        $totalPagado = $this->totalPagadoMes($this->pagosMes(date('y'), $mes));
+        $totalPagado = $this->totalPagadoMes(date('Y'), $mes);
 
         return $totalAPagar - $totalPagado;
     }

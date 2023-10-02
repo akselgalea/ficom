@@ -123,7 +123,7 @@ class EstudianteController extends Controller
      */
     public function storePago($id, Request $req) {
         $result = $this->studentService->pagoStore($id, $req);
-        return response()->json(['message' => $result['message']], $result['status']);
+        return response()->json($result, $result['status']);
     }
 
     public function pagos($id)

@@ -91,8 +91,9 @@ class EstudianteService
         );
 
         try {
-            $estudiante->pagos()->create($validated);
-            return ['status' => 200, 'message' => 'Pago registrado con éxito'];
+            $pago = $estudiante->pagos()->create($validated);
+            
+            return ['status' => 200, 'message' => 'Pago registrado con éxito', 'pago' => $pago];
         } catch (Exception $e) {
             return ['status' => 400, 'message' => 'Ha ocurrido un error'];
         }
@@ -272,7 +273,7 @@ class EstudianteService
                 'mes' => $mes,
                 'arancel' => $estudiante->curso->nivel->arancel,
                 'totalDescuentos' => $estudiante->getDescuentos(),
-                'abonado' => $estudiante->totalPagadoMes($estudiante->pagosMes(date('y'), $mes)),
+                'abonado' => $estudiante->totalPagadoMes(date('Y'), $mes),
                 'totalPagar' => $estudiante->getTotalAPagarPorMes()
             ];
     

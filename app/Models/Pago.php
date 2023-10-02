@@ -28,6 +28,10 @@ class Pago extends Model
         'updated_at'
     ];
 
+    protected $casts = [
+        'anio' => 'integer'
+    ];
+
     /**
      * Get the estudiante that owns the Pago
      *

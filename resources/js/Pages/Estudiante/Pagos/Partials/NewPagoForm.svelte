@@ -1,4 +1,5 @@
 <script>
+	import { documentoOptions } from './../../../../helpers/const.js';
     import { monthToString, formatDate } from "../../../../helpers/helpers";
     export let total, onSubmit, errors;
     
@@ -15,17 +16,6 @@
         observacion: '',
         total: total
     }
-
-    const documentoOptions = {
-        boleta: [
-            'efectivo',
-            'transferencia'
-        ],
-        recibo: [
-            'cheque',
-            'vale vista'
-        ]
-    }
 </script>
 
 <form id="formPago" class="mt-3 row" on:submit|preventDefault={onSubmit(form)}>
@@ -40,6 +30,7 @@
             <option value="abril">Abril</option>
             <option value="mayo">Mayo</option>
             <option value="junio">Junio</option>
+            <option value="julio">Julio</option>
             <option value="agosto">Agosto</option>
             <option value="septiembre">Septiembre</option>
             <option value="octubre">Octubre</option>
@@ -47,7 +38,7 @@
             <option value="diciembre">Diciembre</option>
         </select>
 
-        {#if errors.mes != undefined}
+        {#if errors.mes}
             <span class="invalid-feedback" role="alert">
                 <strong>{errors.mes[0]}</strong>
             </span>
@@ -147,9 +138,7 @@
             name="observacion"
             class="form-control {errors.observacion ? 'is-invalid' : ''}"
             placeholder="Observación..."
-        >
-            {form.observacion}
-        </textarea>
+        >{form.observacion}</textarea>
 
         {#if errors.observacion}
             <span class="invalid-feedback" role="alert">

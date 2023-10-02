@@ -1,5 +1,6 @@
 <script>
 	import { toCLP } from "../../../../helpers/helpers";
+	import EditPagoForm from "./EditPagoForm.svelte";
     export let estudiante, pagos;
 
     const emptyRow = `
@@ -11,14 +12,14 @@
         <div></div>
         <div></div>
     `;
+
+    const onUpdated = (event) => {
+        const {oldPago, newPago} = event.detail;
+
+        pagos[oldPago.mes] = pagos[oldPago.mes].filter(pago => pago.id !== oldPago.id);
+        pagos[newPago.mes] = pagos[newPago.mes].concat(newPago);
+    }
 </script>
-
-<table>
-    <tr>
-        {@html emptyRow}
-    </tr>
-</table>
-
 <div class="card p-4 mt-3">
     <h2 class="mb-3">Pagos</h2>
     <div class="tabla-pagos-container">
@@ -78,21 +79,23 @@
                                 [&>div]:t-py-2
                             "
                             >
-                            {#each pagos[mes] as pago}
+                            {#each pagos[mes] as pago (pago.id)}
                                 <div class="text-uppercase">{ pago.documento }</div>
                                 <div>{ pago.num_documento }</div>
                                 <div>{ pago.fecha_pago }</div>
                                 <div>{ toCLP(pago.valor) }</div>
                                 <div class="text-capitalize">{ pago.forma }</div>
                                 <div>{ pago.observacion ?? '' }</div>
-                                <div>
-                                    <button class="t-py-1 t-px-2 t-text-sm t-font-medium t-focus:outline-none t-rounded-lg t-border focus:t-z-10 focus:t-ring-4 focus:t-ring-gray-700 t-bg-gray-800 t-text-white t-border-gray-600 hover:t-bg-gray-700">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-dots-circle-horizontal" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <div class="t-gap-2">
+                                    <EditPagoForm {pago} on:updated={onUpdated} />
+
+                                    <button class="t-py-1 t-px-2 t-text-sm t-font-medium t-focus:outline-none t-rounded-lg t-border focus:t-z-10 focus:t-ring-4 focus:t-ring-gray-700 t-bg-gray-800 t-text-white t-border-gray-600 hover:t-bg-red-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash-x" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                            <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                                            <path d="M8 12l0 .01" />
-                                            <path d="M12 12l0 .01" />
-                                            <path d="M16 12l0 .01" />
+                                            <path d="M4 7h16" />
+                                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                                            <path d="M10 12l4 4m0 -4l-4 4" />
                                         </svg>
                                     </button>
                                 </div>
@@ -108,14 +111,16 @@
                             <div>{toCLP(pagos[mes][0].valor)}</div>
                             <div class="text-capitalize">{pagos[mes][0].forma}</div>
                             <div>{pagos[mes][0].observacion ?? ''}</div>
-                            <div>
-                                <button class="t-py-1 t-px-2 t-text-sm t-font-medium t-focus:outline-none t-rounded-lg t-border focus:t-z-10 focus:t-ring-4 focus:t-ring-gray-700 t-bg-gray-800 t-text-white t-border-gray-600 hover:t-text-white hover:t-bg-gray-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-dots-circle-horizontal" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <div class="t-gap-2">
+                                <EditPagoForm pago={pagos[mes][0]} on:updated={onUpdated} />
+
+                                <button class="t-py-1 t-px-2 t-text-sm t-font-medium t-focus:outline-none t-rounded-lg t-border focus:t-z-10 focus:t-ring-4 focus:t-ring-gray-700 t-bg-gray-800 t-text-white t-border-gray-600 hover:t-bg-red-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash-x" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                                        <path d="M8 12l0 .01" />
-                                        <path d="M12 12l0 .01" />
-                                        <path d="M16 12l0 .01" />
+                                        <path d="M4 7h16" />
+                                        <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                                        <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                                        <path d="M10 12l4 4m0 -4l-4 4" />
                                     </svg>
                                 </button>
                             </div>
