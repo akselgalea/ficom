@@ -10,7 +10,7 @@
     <nav id="navegador-top" class="navbar navbar-expand-md navbar-light shadow-sm navegador-principal">
         <div class="container">
             <a class="navbar-brand" href="{{ url('/') }}">
-                <img height="60px" src="{{ asset('img/logo.png') }}" />
+                <img class="logo-nav" src="{{ asset('img/logo.png') }}" />
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                 <span class="navbar-toggler-icon"></span>

@@ -1,4 +1,5 @@
 <script>
+	import toast from 'svelte-french-toast';
     import { documentoOptions } from './../../../../helpers/const.js';
     import { createEventDispatcher } from 'svelte';
     export let pago;
@@ -14,6 +15,8 @@
             newPago: form,
             oldPago: pago
         })
+
+        toast.success('Pago actualizado con éxito!');
     }
 </script>
 

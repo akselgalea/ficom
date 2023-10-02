@@ -1,5 +1,6 @@
 <script>
 	import { toCLP } from "../../../../helpers/helpers";
+	import DeletePagoForm from "./DeletePagoForm.svelte";
 	import EditPagoForm from "./EditPagoForm.svelte";
     export let estudiante, pagos;
 
@@ -18,6 +19,12 @@
 
         pagos[oldPago.mes] = pagos[oldPago.mes].filter(pago => pago.id !== oldPago.id);
         pagos[newPago.mes] = pagos[newPago.mes].concat(newPago);
+    }
+
+    const onDeleted = (event) => {
+        const {pagoId, mes} = event.detail;
+
+        pagos[mes] = pagos[mes].filter(pago => pago.id !== pagoId);
     }
 </script>
 <div class="card p-4 mt-3">
@@ -49,7 +56,7 @@
             </tbody>
         </table>
 
-        <div class="t-w-full">
+        <div class="t-w-full {window.width < 820 ? 't-overflow-x-scroll' : '' }">
             <header class="t-grid t-grid-cols-8 t-text-center t-border t-border-black [&>div]:t-border [&>div]:t-border-black [&>div]:t-h-full [&>div]:t-py-2 last:t-border-0">
                 <div>Meses</div>
                 <div>Documento</div>
@@ -88,16 +95,7 @@
                                 <div>{ pago.observacion ?? '' }</div>
                                 <div class="t-gap-2">
                                     <EditPagoForm {pago} on:updated={onUpdated} />
-
-                                    <button class="t-py-1 t-px-2 t-text-sm t-font-medium t-focus:outline-none t-rounded-lg t-border focus:t-z-10 focus:t-ring-4 focus:t-ring-gray-700 t-bg-gray-800 t-text-white t-border-gray-600 hover:t-bg-red-500">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash-x" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                            <path d="M4 7h16" />
-                                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
-                                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
-                                            <path d="M10 12l4 4m0 -4l-4 4" />
-                                        </svg>
-                                    </button>
+                                    <DeletePagoForm pago={pago} on:deleted={onDeleted} />
                                 </div>
                             {/each}
                             </div>
@@ -113,16 +111,7 @@
                             <div>{pagos[mes][0].observacion ?? ''}</div>
                             <div class="t-gap-2">
                                 <EditPagoForm pago={pagos[mes][0]} on:updated={onUpdated} />
-
-                                <button class="t-py-1 t-px-2 t-text-sm t-font-medium t-focus:outline-none t-rounded-lg t-border focus:t-z-10 focus:t-ring-4 focus:t-ring-gray-700 t-bg-gray-800 t-text-white t-border-gray-600 hover:t-bg-red-500">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash-x" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <path d="M4 7h16" />
-                                        <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
-                                        <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
-                                        <path d="M10 12l4 4m0 -4l-4 4" />
-                                    </svg>
-                                </button>
+                                <DeletePagoForm pago={pagos[mes][0]} on:deleted={onDeleted} />
                             </div>
                         </div>
                     {:else}

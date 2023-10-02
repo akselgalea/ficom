@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 // Fonts
 @import url('https://fonts.bunny.net/css?family=Nunito');
 // Variables
@@ -36,6 +35,11 @@
 
 .flc::first-letter {
     text-transform: uppercase;
+}
+
+.logo-nav {
+  width: auto;
+  height: 60px;
 }
 
 .navegador-principal {
