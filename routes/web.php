@@ -8,7 +8,8 @@ use App\Http\Controllers\{
   EstudianteController,
   FicomController,
   NivelController,
-  UserController
+  UserController,
+  PagoController
 };
 use Inertia\Inertia;
 
@@ -40,6 +41,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/subir', [EstudianteController::class, 'storeMassive'])->name('subirReg');
     });
 
+    Route::post('check-password', [UserController::class, 'checkPassword'])->name('user.check-password');
+
     Route::group(['middleware' => ['check.role:admin|contabilidad']], function () {
         //Estudiante
         Route::get('/estudiantes/{id}/becas', [EstudianteController::class, 'becaEdit'])->name('estudiante.beca.edit');
@@ -49,6 +52,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/estudiantes/{id}/pagos', [EstudianteController::class, 'storePago'])->name('pago.store');
         Route::get('/estudiantes/{id}/generar-reporte', [FicomController::class, 'createReport'])->name('estudiante.ficom.generar');
         Route::get('/estudiantes/generar-reporte', [FicomController::class, 'createReportAll'])->name('estudiante.ficom.generar.all');
+
+        //Pagos
+        Route::delete('/pagos/{id}', [PagoController::class, 'delete'])->name('pago.delete');
   
         //Becas
         Route::get('/becas/nueva', [BecaController::class, 'create'])->name('beca.create');

@@ -1,4 +1,5 @@
 <script>
+    import axios from 'axios';
 	import { toast } from 'svelte-french-toast';
 	import { toCLP } from '../../../../helpers/helpers';
 	import EstudianteInfo from './EstudianteInfo.svelte';
@@ -12,16 +13,24 @@
     }
 
     const onDelete = () => {
-        console.log(form);
         // hacer el llamado al back
-        dispatch('deleted', {
-            pagoId: pago.id,
-            mes: pago.mes
-        })
-
-        toast.success('Pago eliminado con éxtio!');
+        axios.post('/check-password', form).then(() => {
+            axios.delete(`/pagos/${pago.id}`).then(() => {
+                dispatch('deleted', {
+                    pagoId: pago.id,
+                    mes: pago.mes
+                })
+        
+                toast.success('Pago eliminado con éxito!');
+            }, err => {
+                toast.error(err.response.data.error);
+            })
+        }, err => {
+            toast.error(err.response.data.error);
+        });
     }
 </script>
+
 <button
     class="t-py-1 t-px-2 t-text-sm t-font-medium t-focus:outline-none t-rounded-lg t-border focus:t-z-10 focus:t-ring-4 focus:t-ring-gray-700 t-bg-gray-800 t-text-white t-border-gray-600 hover:t-bg-red-500"
     on:click={() => deleteModal.show()}
@@ -38,7 +47,7 @@
 <dialog bind:this={deleteModal} class="t-w-screen t-h-screen t-fixed t-bg-slate-900 t-top-0 t-left-0 t-bg-opacity-50 t-items-center">
     <div class="t-grid t-content-center t-place-items-center t-w-full t-h-full">
         <div class="card t-max-w-3xl t-w-5/6 t-p-7">
-            <form on:submit|preventDefault={onDelete}>
+            <form on:submit|preventDefault|stopPropagation={onDelete}>
                 <header class="t-mb-7">
                     <h2 class="t-font-bold t-text-xl">Eliminar Pago</h2>
                     <p>

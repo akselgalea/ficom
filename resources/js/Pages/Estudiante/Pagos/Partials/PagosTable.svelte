@@ -32,24 +32,24 @@
     <div class="tabla-pagos-container">
         <table class="table table-bordered border-dark">
             <tbody>
-                <tr class="datos-estudiante text-center">
+                <tr class="datos-estudiante text-center [&>td]:t-border-2">
                     <td colspan="2" style="width: 45%">{ estudiante.apellidos }</td>
                     <td style="width: 30%">{ estudiante.nombres }</td>
                     <td style="width: 130px">{ `${estudiante.rut} - ${estudiante.dv}` }</td>
                     <td style="width: 60px">{ `${estudiante.curso.curso} - ${estudiante.curso.paralelo}` }</td>
                     <td rowspan="2" style="width: 5ch">{ new Date().getFullYear() }</td>
                 </tr>
-                <tr>
+                <tr class="[&>td]:t-border-2">
                     <td style="width: 10ch">Alumno:</td>
                     <td class="text-center">Apellido paterno y materno</td>
                     <td class="text-center">Nombres</td>
                     <td class="text-center">RUN</td>
                     <td class="text-center">NIVEL</td>
                 </tr>
-                <tr>
+                <tr class="[&>td]:t-border-2">
                     <td colspan="6">Nombre Apoderado: { estudiante.apoderados.apoderado_titular.nombre ?? '' }</td>
                 </tr>
-                <tr>
+                <tr class="[&>td]:t-border-2">
                     <td colspan="2">Teléfono: { estudiante.apoderados.apoderado_titular.telefono ?? '' }</td>
                     <td colspan="4">Correo Electrónico: { estudiante.apoderados.apoderado_titular.email ?? '' }</td>
                 </tr>

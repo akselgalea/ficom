@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Exception;
+use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
@@ -64,5 +65,13 @@ class UserService
       } catch(Exception $e) {
         return ['status' => 400, 'message' => 'No se pudo eliminar al usuario'];
       }
+    }
+
+    static function checkPassword($req) {
+      if(! Hash::check($req->password, $req->user()->password)) {
+        return ['error' => 'La contraseña es incorrecta', 'status' => 400];
+      }
+
+      return ['message' => 'ok'];
     }
 }

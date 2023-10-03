@@ -1,7 +1,7 @@
 <?php
 namespace App\Services;
 
-use App\Models\Estudiante;
+use App\Models\{Estudiante, Pago};
 use Exception;
 
 class PagoService
@@ -12,7 +12,11 @@ class PagoService
         $this->estudiante = new Estudiante;
     }
 
-    public function recordatorioMensual() {
+    function findById($id) {
+      return Pago::findOrFail($id);
+    }
+
+    function recordatorioMensual() {
       try {
         $estudiantes = $this->estudiante->all();
         
@@ -25,7 +29,7 @@ class PagoService
       }
     }
 
-    public function actualizar($id, $req) {
+    function actualizar($id, $req) {
         $validated = $req->validated();
         try {
             $this->nivel::findOrFail($id)->update($validated);
@@ -33,5 +37,15 @@ class PagoService
         } catch(Exception $e) {
             return ['status' => 400, 'message' => 'No se pudo actualizar el nivel', 'nivel' => $req->except('_token')];
         }
+    }
+
+    function delete($id) {
+      try {
+        $this->findById($id)->delete();
+
+        return ['message' => 'Pago eliminado con éxito'];
+      } catch (Exception $e) {
+        return ['status' => 500, 'message' => 'No se pudo eliminar el pago'];
+      }
     }
 }
