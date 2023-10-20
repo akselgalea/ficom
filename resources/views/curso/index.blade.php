@@ -17,7 +17,7 @@
                 <div class="card curso">
                     <div>
                         <div class="nombre">{{ $curso->curso . '-' . $curso->paralelo }}</div>
-                        <div class="arancel"><b>Arancel:</b> {{ toCLP($curso->nivel->arancel) }}</div>
+                        <div class="arancel"><b>Arancel:</b> {{ toCLP($curso->nivel->periodo_actual->arancel) }}</div>
                         <div class="cantidad"><b>Cantidad estudiantes:</b> {{ $curso->estudiantes->count() }}</div>
                     </div>
 

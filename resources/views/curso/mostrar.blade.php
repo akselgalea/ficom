@@ -14,12 +14,12 @@
 
     <div class="form-group mb-3 col-12">
         <div class="form-label">Matrícula</label>
-        <div class="form-control">{{toCLP($curso->nivel->matricula)}}</div>
+        <div class="form-control">{{toCLP($curso->nivel->periodo_actual->matricula)}}</div>
     </div>
 
     <div class="form-group mb-3 col-12">
         <div class="form-label">Arancel</label>
-        <div class="form-control">{{toCLP($curso->nivel->arancel)}}</div>
+        <div class="form-control">{{toCLP($curso->nivel->periodo_actual->arancel)}}</div>
     </div>
 </div>
 

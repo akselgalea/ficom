@@ -1,7 +1,12 @@
 <script>
+    import toast from 'svelte-french-toast';
+    import { createEventDispatcher } from 'svelte';
 	import { documentoOptions } from './../../../../helpers/const.js';
     import { monthToString, formatDate } from "../../../../helpers/helpers";
-    export let total, onSubmit, errors;
+	import axios from 'axios';
+    export let onSubmit, estudianteId, errors;
+
+    const dispatch = createEventDispatcher();
     
     let today = new Date();
 
@@ -13,8 +18,24 @@
         fecha_pago: formatDate(today),
         valor: 0,
         forma: '',
-        observacion: '',
-        total: total
+        observacion: ''
+    }
+
+    const yearChanged = () => {
+        const year = form.anio;
+
+        axios.get(`/estudiantes/${estudianteId}/pagos/periodo/${year}`).then(res => {
+            const { data } = res;
+
+            dispatch('yearChanged', {
+                year,
+                pagos: data.pagos,
+                mensualidad: data.mensualidad
+            });
+        }, error => {
+            console.log(error);
+            toast.error(`No se pudo obtener los datos de pago del año ${year}`);
+        })
     }
 </script>
 
@@ -46,7 +67,7 @@
     </div>
     <div class="form-group mb-3 col-6 col-md-4">
         <label for="anio" class="form-label">Año</label>
-        <select name="anio" class="form-control form-select {errors.anio ? 'is-invalid' : ''}" bind:value={form.anio}>
+        <select name="anio" class="form-control form-select {errors.anio ? 'is-invalid' : ''}" bind:value={form.anio} on:change={yearChanged}>
             <option value="" selected disabled hidden>Selecciona una opción</option>
             <option value={2022}>2022</option>
             <option value={2023}>2023</option>

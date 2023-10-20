@@ -132,6 +132,12 @@ class EstudianteController extends Controller
         return Inertia::render('Estudiante/Pagos/Index', $this->studentService->pagosYear($id));
     }
 
+    public function pagosYear($id, $year) {
+        $res = $this->studentService->pagosYear($id, $year);
+        
+        return response()->json($res, $res['status'] ?? 200);        
+    }
+
     public function becaEdit($id) {
         return view('estudiante.beca', ['estudiante' => $this->studentService->findById($id), 'becas' => Beca::all()]);
     }

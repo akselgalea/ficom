@@ -67,25 +67,25 @@ class EstudianteService
         return [
             'estudiante' => $estudiante,
             'pagos' => $estudiante->pagosPorAnio($year),
-            'mensualidad' => $estudiante->getTotalAPagarPorMes(),
+            'mensualidad' => $estudiante->getTotalAPagarPorMes($year),
         ];
     }
 
     function pagoStore($id, $req) {
         $estudiante = $this->findById($id);
+        $costoMensualidad = $estudiante->getTotalAPagarPorMes($req->anio);
 
         if($estudiante->prioridad == 'prioritario') return ['status' => 400, 'message' => 'Los estudiantes prioritarios no deben pagar'];
 
         $esRecibo = $req->documento === 'recibo';
-
-        $pago = new Pago;
-        $minPago = $esRecibo ? $req->total : 1;
-        $maxPago =  $estudiante->totalAPagar($req->anio, $req->mes, $req->total);
+        
+        $minPago = $esRecibo ? $costoMensualidad : 1;
+        $maxPago = $estudiante->curso->nivel->calcMensualidadYear($req->anio);
         
         if($maxPago <= 0) return ['status' => 400, 'message' => 'Este mas ya ha sido pagado completamente'];
 
         $validated = $req->validate(
-            Pago::rules($req->num_documento, $maxPago, $minPago),
+            Pago::rules($maxPago, $minPago),
             Pago::messages($req->mes, $maxPago, $esRecibo),
             Pago::attributes()
         );

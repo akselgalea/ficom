@@ -14,15 +14,12 @@ class Nivel extends Model
     protected $table = 'niveles';
 
     protected $fillable = [
-        'nombre',
-        'matricula',
-        'arancel'
+        'nombre'
     ];
 
     protected $appends = [
-        'mensualidad'
+        'periodo_actual'
     ];
-
 
     /**
      * Get all of the cursos for the Nivel
@@ -33,11 +30,28 @@ class Nivel extends Model
         return $this->hasMany(Curso::class);
     }
 
-    public function calcMensualidad() {
-        return ($this->arancel - $this->matricula) / self::MESES_A_PAGAR;
+    public function costos(): HasMany {
+        return $this->hasMany(NivelCosto::class)->orderBy('periodo', 'desc');
     }
 
-    public function getMensualidadAttribute() {
-        return $this->calcMensualidad();
+    public function costoPeriodoActual() {
+        return $this->costos()->where('periodo', date('Y'))->first();
+    }
+
+    public function calcMensualidad() {
+        $periodo = $this->costoPeriodoActual();
+        return ($periodo->arancel - $periodo->matricula) / self::MESES_A_PAGAR;
+    }
+
+    public function calcMensualidadYear($year) {
+        $periodo = $this->costos()->where('periodo', $year)->first();
+        return ($periodo->arancel - $periodo->matricula) / self::MESES_A_PAGAR;
+    }
+
+    public function getPeriodoActualAttribute() {
+        $periodo = $this->costoPeriodoActual();
+        $periodo->mensualidad = ($periodo->arancel - $periodo->matricula) / self::MESES_A_PAGAR;
+        
+        return $periodo;
     }
 }

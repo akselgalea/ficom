@@ -27,7 +27,7 @@
 
     <div class="form-group mb-3 col-4">
         <span class="form-span">Monto mensualidad</span>
-        <p class="form-control">{ toCLP(estudiante.curso?.nivel?.mensualidad) }</p>
+        <p class="form-control">{ toCLP(estudiante.curso?.nivel?.periodo_actual.mensualidad) }</p>
     </div>
     <div class="form-group mb-3 col-4">
         <span class="form-span">% Beca</span>

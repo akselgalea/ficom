@@ -42,14 +42,14 @@ class Pago extends Model
         return $this->belongsTo(Estudiante::class);
     }
 
-    static function rules($id = null, $maxPago, $minPago): array {
+    static function rules($maxPago, $minPago, $id = null): array {
         return [
             'mes' => 'required',
             'anio' => 'required',
             'documento' => 'required',
             'num_documento' => ['required', Rule::unique('pagos')->ignore($id)],
             'fecha_pago' => 'required',
-            'valor' => "required|numeric|max:$maxPago|min:$minPago",
+            'valor' => $id ? "required|numeric" : "required|numeric|max:$maxPago|min:$minPago",
             'forma' => 'required',
             'observacion' => 'max:65000'
         ];

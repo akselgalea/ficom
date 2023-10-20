@@ -16,8 +16,8 @@
 2. Revisar el flujo de cambio de años en el historial de pagos, manteniendo un registro histórico.
 -- Al cambiar año que se carguen los pagos de años pasados
 -- Generar tabla pivote con el arancel y el año correspondiente
-3. Habilitar la edición de los campos pertinentes.
--- Editar la tabla de pagos, poder modificar los pagos
+3. Habilitar la edición de los campos pertinentes. --DONE
+-- Editar la tabla de pagos, poder modificar los pagos -- DONE
 4. Hacer que el campo "Observación" sea opcional en esta sección. --DONE
 
 ### Listado de Estudiantes:

@@ -1,5 +1,6 @@
 <script>
 	import toast from 'svelte-french-toast';
+    import axios from 'axios';
     import { documentoOptions } from './../../../../helpers/const.js';
     import { createEventDispatcher } from 'svelte';
     export let pago;
@@ -11,12 +12,23 @@
     const form = {...pago}
 
     const updatePago = () => {
-        dispatch('updated', {
-            newPago: form,
-            oldPago: pago
-        })
+        axios.post(`/pagos/${pago.id}`, form).then(() => {
+            toast.success('Pago actualizado con éxito!');
 
-        toast.success('Pago actualizado con éxito!');
+            dispatch('updated', {
+                newPago: form,
+                oldPago: pago
+            });
+
+            editModal.close();
+        }, err => {
+            const errors = err.request.data.errors;
+
+            if(errors)
+                console.log(errors);
+
+            toast.error('Error al actualizar el pago');
+        });
     }
 </script>
 
@@ -35,7 +47,7 @@
 <dialog bind:this={editModal} class="t-w-screen t-h-screen t-fixed t-bg-slate-900 t-top-0 t-left-0 t-bg-opacity-50 t-items-center">
     <div class="t-grid t-content-center t-place-items-center t-w-full t-h-full">
         <div class="card t-max-w-6xl t-w-5/6 t-p-7">
-            <form on:submit|preventDefault={updatePago} class="w-full">
+            <form on:submit|preventDefault|stopPropagation={updatePago} class="w-full">
                 <header class="t-mb-7">
                     <h2 class="t-font-bold t-text-xl">Actualizar Pago</h2>
                 </header>

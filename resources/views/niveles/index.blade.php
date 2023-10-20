@@ -9,8 +9,9 @@
                 <div class="card curso">
                     <div>
                         <div class="nombre">{{ $nivel->nombre }}</div>
-                        <div class="arancel"><b>Matrícula:</b> {{ toCLP($nivel->matricula) }}</div>
-                        <div class="arancel"><b>Arancel:</b> {{ toCLP($nivel->arancel) }}</div>
+                        <div class="arancel"><b>Matrícula:</b> {{ toCLP($nivel->periodo_actual->matricula) }}</div>
+                        <div class="arancel"><b>Mensualidad:</b> {{ toCLP($nivel->periodo_actual->mensualidad) }}</div>
+                        <div class="arancel"><b>Arancel:</b> {{ toCLP($nivel->periodo_actual->arancel) }}</div>
                     </div>
 
                     <div class="buttons mt-2">

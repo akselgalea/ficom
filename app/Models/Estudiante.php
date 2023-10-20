@@ -299,14 +299,16 @@ class Estudiante extends Model
      *   @param  integer $tAp  --> total a pagar
      *   @return integer       --> total que falta pagar en ese mes
     */
-    public function totalAPagar($year, $month, $tAP) {
+    public function totalAPagar($year, $month) {
         if($month == 'matricula')
             return $this->totalAPagarMatricula($year);
 
-        return $tAP - $this->totalPagadoMes($year, $month);
+        return $this->getTotalAPagarPorMes($year) - $this->totalPagadoMes($year, $month);
     }
 
-    public function costoMatricula() {
+    public function costoMatricula($year = null) {
+        if(!$year) $year = date('Y');
+
         $total = $this->curso->nivel->matricula;
         $descuentos = $this->getDescuentos();
 
@@ -317,7 +319,7 @@ class Estudiante extends Model
     }
 
     public function totalAPagarMatricula($year) {
-        $tAP = $this->costoMatricula();
+        $tAP = $this->costoMatricula($year);
 
         return $tAP - $this->totalPagadoMes($year, 'matricula');
     }
@@ -427,8 +429,8 @@ class Estudiante extends Model
      * @var Integer $descuentos -> porcentaje de descuento que tiene el estudiante
      * @return Integer cuanto tiene que pagar por mes
     */
-    public function getTotalAPagarPorMes() {
-        $total = $this->curso->nivel->mensualidad;
+    public function getTotalAPagarPorMes($year = null) {
+        $total = !$year ? $this->curso->nivel->periodo_actual->mensualidad : $this->curso->nivel->calcMensualidadYear($year);
         $descuentos = $this->getDescuentos();
 
         if($descuentos >= 100)
@@ -453,19 +455,12 @@ class Estudiante extends Model
         return $descuentos;
     }
 
-    public function getTotalAPagarMes($mes) {
-        $totalAPagar = $this->getTotalAPagarPorMes();
-        $totalPagado = $this->totalPagadoMes(date('Y'), $mes);
-
-        return $totalAPagar - $totalPagado;
-    }
-
-    public function montoAnual() {
+    public function montoAnual($year = null) {
         $totalXMes = $this->getTotalAPagarPorMes();
         
         if($totalXMes == 0)
           return 0;
 
-        return ($totalXMes * 12) + $this->costoMatricula();
+        return ($totalXMes * 12) + $this->costoMatricula($year);
     }
 }

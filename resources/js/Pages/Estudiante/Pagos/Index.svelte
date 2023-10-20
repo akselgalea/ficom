@@ -14,6 +14,8 @@
     
     let formErrors = {}
 
+    let year = new Date().getFullYear();
+
     const newPago = (data) => {
         axios.post(`/estudiantes/${estudiante.id}/pagos`, data).then((res) => {
             const {pago} = res.data;
@@ -29,12 +31,20 @@
             }
         })
     }
+
+    const onYearChange = (detail) => {
+        const {year: newYear, pagos: newPagos, mensualidad: newMensualidad} = detail.detail;
+
+        year = newYear;
+        pagos = newPagos;
+        mensualidad = newMensualidad;
+    }
 </script>
 
 <Layout title="Pagos">
     <EstudianteInfo {estudiante} {mensualidad} />
-    <NewPagoForm total={mensualidad} onSubmit={newPago} errors={formErrors} />
-    <PagosTable {estudiante} {pagos} slot="nocard" />
+    <NewPagoForm estudianteId={estudiante.id} onSubmit={newPago} errors={formErrors} on:yearChanged={onYearChange} />
+    <PagosTable {estudiante} {pagos} {year}  slot="nocard" />
 </Layout>
 
 <slot/>

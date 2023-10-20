@@ -2,7 +2,7 @@
 	import { toCLP } from "../../../../helpers/helpers";
 	import DeletePagoForm from "./DeletePagoForm.svelte";
 	import EditPagoForm from "./EditPagoForm.svelte";
-    export let estudiante, pagos;
+    export let estudiante, pagos, year;
 
     const emptyRow = `
         <div></div>
@@ -28,7 +28,7 @@
     }
 </script>
 <div class="card p-4 mt-3">
-    <h2 class="mb-3">Pagos</h2>
+    <h2 class="mb-3">Pagos {year}</h2>
     <div class="tabla-pagos-container">
         <table class="table table-bordered border-dark">
             <tbody>
@@ -37,7 +37,7 @@
                     <td style="width: 30%">{ estudiante.nombres }</td>
                     <td style="width: 130px">{ `${estudiante.rut} - ${estudiante.dv}` }</td>
                     <td style="width: 60px">{ `${estudiante.curso.curso} - ${estudiante.curso.paralelo}` }</td>
-                    <td rowspan="2" style="width: 5ch">{ new Date().getFullYear() }</td>
+                    <td rowspan="2" style="width: 5ch">{ year }</td>
                 </tr>
                 <tr class="[&>td]:t-border-2">
                     <td style="width: 10ch">Alumno:</td>
