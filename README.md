@@ -15,7 +15,8 @@
 1. Agregar campo de "Vale Vista" a los tipos de documento. --FORMAS DE PAGO -- DONE
 2. Revisar el flujo de cambio de años en el historial de pagos, manteniendo un registro histórico.
 -- Al cambiar año que se carguen los pagos de años pasados
--- Generar tabla pivote con el arancel y el año correspondiente
+-- Generar tabla pivote con el arancel y el año 
+-- DONE
 3. Habilitar la edición de los campos pertinentes. --DONE
 -- Editar la tabla de pagos, poder modificar los pagos -- DONE
 4. Hacer que el campo "Observación" sea opcional en esta sección. --DONE
@@ -30,7 +31,7 @@
 -Blanco para los alumnos regulares de y aquellos que tienen algún porcentaje de beca (incluyendo a los que tienen beca del 100%); que dejan de ser prioritarios. -- DONE
 -- crear tabla que almacene el estado del alumno en X año (prioridad, curso, año, estudiante_id)
 
-4. Al buscar usando la paginación, mantener los parámetros de búsqueda al cambiar de página.
+4. Al buscar usando la paginación, mantener los parámetros de búsqueda al cambiar de página. --DONE
 
 ### Finanzas:
 1. Agregar un nivel adicional de categorización, dividiendo los niveles en prebásica, básica, media y cuarto medio. -- DONE
