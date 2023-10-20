@@ -1,7 +1,9 @@
 <script>
     export let links, page;
 
-    const urlQueryParams = window.location.search;
+    const regex = new RegExp(`[?&]page=[^&]*(&|$)`, 'i');
+    const queryParams = window.location.search;
+    const urlQueryParams = queryParams.replace(regex, '');
 </script>
 
 <ul class="pagination">
