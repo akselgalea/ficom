@@ -8,7 +8,7 @@
 3. Hacer que el ingreso de información en el campo "Suplente 1" sea obligatorio, mientras que los demás campos suplentes deben ser opcionales. -- Suplente para retiro
 
 ### Historial de pago:
--- Voy a pasar esto a Svelte (JS), porque quieren que sea dinámico.
+-- Voy a pasar esto a Svelte (JS), porque quieren que sea dinámico. --done
 -- Al generar un pago, el recibo es cheque o vale vista
 -- Al generar un pago, la forma de pago de la boleta es efectivo o transferencia
 -- Cambiar la posicion de los campos forma de pago y tipo de documento (swap)
@@ -32,6 +32,7 @@
 -- crear tabla que almacene el estado del alumno en X año (prioridad, curso, año, estudiante_id)
 
 4. Al buscar usando la paginación, mantener los parámetros de búsqueda al cambiar de página. --DONE
+5. Que se marque la página actual.
 
 ### Finanzas:
 1. Agregar un nivel adicional de categorización, dividiendo los niveles en prebásica, básica, media y cuarto medio. -- DONE

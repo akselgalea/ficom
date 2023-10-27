@@ -6,7 +6,7 @@
 	import PagosTable from './Partials/PagosTable.svelte';
     import toast from 'svelte-french-toast';
 
-    export let estudiante, pagos, mensualidad, errors;
+    export let estudiante, pagos, mensualidad, periodoAnterior, errors;
 
     $: if(errors.length) {
         console.error(errors);
@@ -33,16 +33,17 @@
     }
 
     const onYearChange = (detail) => {
-        const {year: newYear, pagos: newPagos, mensualidad: newMensualidad} = detail.detail;
+        const {year: newYear, pagos: newPagos, mensualidad: newMensualidad, periodoAnterior: newPeriodoAnterior} = detail.detail;
 
         year = newYear;
         pagos = newPagos;
         mensualidad = newMensualidad;
+        periodoAnterior = newPeriodoAnterior;
     }
 </script>
 
 <Layout title="Pagos">
-    <EstudianteInfo {estudiante} {mensualidad} />
+    <EstudianteInfo {estudiante} {mensualidad} {periodoAnterior} />
     <NewPagoForm estudianteId={estudiante.id} onSubmit={newPago} errors={formErrors} on:yearChanged={onYearChange} />
     <PagosTable {estudiante} {pagos} {year}  slot="nocard" />
 </Layout>

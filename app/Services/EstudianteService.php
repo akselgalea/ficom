@@ -37,13 +37,12 @@ class EstudianteService
     }
 
     function findById($id) {
-        return Estudiante::with('curso', 'beca')->findOrFail($id);
+        return Estudiante::findOrFail($id);
     }
 
     function perfil($id) {
         // era show
         $estudiante = $this->findById($id);
-        $estudiante->nivel = $estudiante->curso_id;
         $apellidos = explode(' ', $estudiante->apellidos);
         $estudiante->apellido_paterno = $apellidos[0];
         $estudiante->apellido_materno = $apellidos[1] ?? '';
@@ -61,6 +60,7 @@ class EstudianteService
     }
 
     function pagosYear($id, $year = null) {
+        $lastYear = $year;
         if(!$year) $year = date('Y');
         $estudiante = $this->findById($id);
 
@@ -68,6 +68,7 @@ class EstudianteService
             'estudiante' => $estudiante,
             'pagos' => $estudiante->pagosPorAnio($year),
             'mensualidad' => $estudiante->getTotalAPagarPorMes($year),
+            'periodoAnterior' => $lastYear ? $estudiante->getPeriodoYear($year) : null
         ];
     }
 
@@ -75,12 +76,12 @@ class EstudianteService
         $estudiante = $this->findById($id);
         $costoMensualidad = $estudiante->getTotalAPagarPorMes($req->anio);
 
-        if($estudiante->prioridad == 'prioritario') return ['status' => 400, 'message' => 'Los estudiantes prioritarios no deben pagar'];
+        if($estudiante->getPeriodoYear($req->anio)->prioridad == 'prioritario') return ['status' => 400, 'message' => 'Los estudiantes prioritarios no deben pagar'];
 
         $esRecibo = $req->documento === 'recibo';
         
         $minPago = $esRecibo ? $costoMensualidad : 1;
-        $maxPago = $estudiante->curso->nivel->calcMensualidadYear($req->anio);
+        $maxPago = $estudiante->getPeriodoYear($req->anio)->curso->nivel->calcMensualidadYear($req->anio);
         
         if($maxPago <= 0) return ['status' => 400, 'message' => 'Este mas ya ha sido pagado completamente'];
 
@@ -142,7 +143,7 @@ class EstudianteService
         try {
             $formattedRut = $this->validateRut($req->estudiante['run']);
 
-            Estudiante::create([
+            $estudiante = Estudiante::create([
                 'nombres' => $req->estudiante['nombres'],
                 'apellidos' => $req->estudiante['apellido_paterno'] . ' ' . $req->estudiante['apellido_materno'],
                 'rut' => $formattedRut[0],
@@ -152,8 +153,6 @@ class EstudianteService
                 'genero' => $req->estudiante['genero'],
                 'direccion' => $req->estudiante['direccion'],
                 'nacionalidad' => $req->estudiante['nacionalidad'],
-                'curso_id' => $req->estudiante['nivel'],
-                'prioridad' => $req->estudiante['prioridad'],
                 'fecha_nacimiento' => $req->estudiante['fecha_nacimiento'],
                 'email' => $req->estudiante['email'],
                 'enfermedades' => $req->estudiante['enfermedades'],
@@ -166,6 +165,12 @@ class EstudianteService
                     'padre' => empty($req->padre) ? null : $req->padre,
                     'suplentes' => $req->suplentes
                 ]
+            ]);
+
+            $estudiante->periodo()->create([
+                'periodo' => now()->year,
+                'prioridad' => $req->estudiante['prioridad'],
+                'curso_id' => $req->estudiante['nivel']
             ]);
 
             return ['status' => 200, 'message' => 'Estudiante creado con éxito'];
@@ -207,7 +212,6 @@ class EstudianteService
                 'rut' => $formattedRut[0],
                 'dv' => $formattedRut[1],
                 'prioridad' => $request->estudiante['prioridad'],
-                'curso_id' => $request->estudiante['nivel'],
                 'edad' => $request->estudiante['edad'],
                 'genero' => $request->estudiante['genero'],
                 'nacionalidad' => $request->estudiante['nacionalidad'],
@@ -227,8 +231,10 @@ class EstudianteService
                 ]
             ]);
 
+            $estudiante->periodoActual->update(['curso_id' => $req->estudiante['nivel']]);
+
             if($req->estudiante['prioridad'] === 'prioritario') {
-                $estudiante->beca()->dissociate();
+                $estudiante->periodoActual->beca()->dissociate();
             }
 
             return ['status' => 200, 'message' => 'Estudiante actualizado con exito!'];

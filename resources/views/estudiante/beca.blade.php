@@ -16,7 +16,7 @@
         
         <div class="form-group mb-3 col-4">
             <span class="form-span">Prioridad</span>
-            <p class="form-control flc">{{ $estudiante->prioridad }}</p>
+            <p class="form-control flc">{{ $estudiante->periodo_actual->prioridad }}</p>
         </div>
 
         <div class="form-group mb-3 col-4">

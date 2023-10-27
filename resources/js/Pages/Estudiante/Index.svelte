@@ -78,12 +78,12 @@
 				</thead>
 				<tbody class="table-group-divider">
 					{#each estudiantes.data as estud}
-						<tr class={prioridadClasses[estud.prioridad]}>
+						<tr class={prioridadClasses[estud.periodo_actual.prioridad]}>
 							<td>{estud.apellidos}</td>
 							<td>{estud.nombres}</td>
 							<td>{estud.rut}-{estud.dv}</td>
-							<td class="flc">{estud.prioridad}</td>
-							<td>{estud.curso ? `${estud.curso.curso}-${estud.curso.paralelo}` : ''}</td>
+							<td class="flc">{estud.periodo_actual.prioridad}</td>
+							<td>{estud.periodo_actual.curso ? `${estud.periodo_actual.curso.curso}-${estud.periodo_actual.curso.paralelo}` : ''}</td>
 							<td>
 								<a
 									href="/estudiantes/{estud.id}"

@@ -30,7 +30,8 @@
             dispatch('yearChanged', {
                 year,
                 pagos: data.pagos,
-                mensualidad: data.mensualidad
+                mensualidad: data.mensualidad,
+                periodoAnterior: data.periodoAnterior
             });
         }, error => {
             console.log(error);

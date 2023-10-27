@@ -35,52 +35,43 @@ class Estudiante extends Model
         'telefono_emergencia',
         'dv',
         'es_nuevo',
-        'prioridad',
         'email_institucional',
         'telefono',
         'direccion',
-        'apoderados',
-        'curso_id',
-        'beca_id'
+        'apoderados'
     ];
 
     protected $casts = [
       'apoderados' => 'array'
     ];
 
-    /**
-     * Get the apoderados that owns the Estudiante
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function apoderados(): BelongsToMany
-    {
-        return $this->belongsToMany(Apoderado::class, 'apoderado_estudiante', 'estudiante_id', 'apoderado_id')->withPivot('es_suplente');
+    protected $appends = [
+        'periodo_actual'
+    ];
+
+    public function periodo() {
+        return $this->hasMany(EstudiantePeriodo::class);
     }
 
-    public function apoderadoTitular()
-    {
-        return $this->apoderados()->wherePivot('es_suplente', false);
+
+    public function getPeriodoYear($year = null) {
+        return $this->periodo()->with(['curso', 'beca'])->where('periodo', $year ?? now()->year)->first();
     }
 
-    public function apoderadoSuplente()
-    {
-        return $this->apoderados()->wherePivot('es_suplente', true);
+    public function getPeriodoActualAttribute() {
+        return $this->getPeriodoYear();
     }
 
-    public function beca(): BelongsTo
+    public function beca($periodo = null)
     {
-        return $this->belongsTo(Beca::class);
+        $year = $periodo ?? now()->year;
+        return $this->periodo()->where('periodo', $year)->first()->beca();
     }
 
-    /**
-     * Get the curso that owns the Estudiante
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function curso(): BelongsTo
+    public function curso($periodo = null)
     {
-        return $this->belongsTo(Curso::class);
+        $year = $periodo ?? now()->year;
+        return $this->periodo()->where('periodo', $year)->first()->curso();
     }
 
     /**
@@ -91,14 +82,6 @@ class Estudiante extends Model
     public function pagos(): HasMany
     {
         return $this->hasMany(Pago::class);
-    }
-
-    public function hasApoderadoTitular() : bool {
-        return $this->apoderadoTitular->count() > 0;
-    }
-
-    public function hasApoderadoSuplente(): bool {
-        return $this->apoderadoSuplente->count() > 0;
     }
 
     public function scopeSearchByCurso($query, $curso)
@@ -310,7 +293,7 @@ class Estudiante extends Model
         if(!$year) $year = date('Y');
 
         $total = $this->curso->nivel->matricula;
-        $descuentos = $this->getDescuentos();
+        $descuentos = $this->getDescuentos($year);
 
         if($descuentos >= 100)
           return 0;
@@ -431,22 +414,22 @@ class Estudiante extends Model
     */
     public function getTotalAPagarPorMes($year = null) {
         $total = !$year ? $this->curso->nivel->periodo_actual->mensualidad : $this->curso->nivel->calcMensualidadYear($year);
-        $descuentos = $this->getDescuentos();
-
+        $descuentos = $this->getDescuentos($year);
         if($descuentos >= 100)
             return 0;
 
         return $total * (1 - number_format('0.'. $descuentos, 2));
     }
 
-    public function getDescuentos() {
+    public function getDescuentos($year = null) {
+        $prioridad = $year ? $this->getPeriodoYear($year)->prioridad : $this->periodo_actual->prioridad;
+        $beca = $year ? $this->getPeriodoYear($year)->beca : $this->beca;
         $descuentos = 0;
-        $beca = $this->beca;
 
-        if($this->prioridad == 'prioritario')
+        if($prioridad == 'prioritario')
             return 100;
 
-        if($this->prioridad == 'nuevo prioritario')
+        if($prioridad == 'nuevo prioritario')
             $descuentos += env('DESCUENTO_NUEVO_PRIORITARIO');
 
         if($beca)

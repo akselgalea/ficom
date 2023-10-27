@@ -13,7 +13,9 @@
 
 	$: errors && handleErrorsChange();
 
-	const nivel = estudiante.nivel;
+	console.log(estudiante);
+
+	const nivel = estudiante.periodo_actual.curso.id;
 
 	let erroresEstudiante = {};
 	let erroresApoderadoTitular = {};
@@ -23,7 +25,10 @@
 	let erroresSuplentes = {};
 
 	let form = useForm({
-		estudiante: estudiante,
+		estudiante: {
+			...estudiante,
+			nivel
+		},
 		apoderado_titular: estudiante.apoderados?.apoderado_titular ?? {},
 		apoderado_suplente: estudiante.apoderados?.apoderado_suplente ?? {},
 		madre: estudiante.apoderados?.madre ?? {},
@@ -134,11 +139,7 @@
 	};
 </script>
 
-<svelte:head>
-	<title>Perfil estudiante - Simón Bolívar</title>
-</svelte:head>
-
-<Layout>
+<Layout title="Perfil estudiante">
 	<div class="buttons mb-4 print-hidden">
 		<a href="/estudiantes/{estudiante.id}/pagos" class="btn btn-primary"
 			>Ver historial de pago</a

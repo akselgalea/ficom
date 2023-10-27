@@ -28,13 +28,10 @@ return new class extends Migration
             $table->string('telefono_emergencia')->nullable()->default(null);
             $table->string('dv')->nullable()->default(null);
             $table->boolean('es_nuevo')->default(false);
-            $table->enum('prioridad', array('alumno regular', 'prioritario', 'nuevo prioritario'))->default('alumno regular');
             $table->string('email_institucional')->unique()->nullable();
             $table->string('telefono')->default('')->nullable();
             $table->string('direccion')->default('')->nullable();
             $table->json('apoderados')->default(null)->nullable();
-            $table->foreignId('curso_id')->nullable()->nullOnDelete()->cascadeOnUpdate();
-            $table->foreignId('beca_id')->nullable()->nullOnDelete()->cascadeOnUpdate();
             $table->softDeletes();
             $table->timestamps();
         });

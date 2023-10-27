@@ -61,7 +61,7 @@ class EstudianteController extends Controller
     {
         Inertia::setRootView('layouts.inertia'); 
         
-        return Inertia::render('Estudiante/Actualizar', ['estudiante' => $this->studentService->perfil($id), 'cursos' => Curso::all(), 'becas' => Beca::all()]);
+        return Inertia::render('Estudiante/Actualizar', ['estudiante' => $this->studentService->perfil($id), 'cursos' => Curso::all()]);
     }
 
     public function getEstudiantesNuevos(Request $req) {
