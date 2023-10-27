@@ -62,7 +62,7 @@ class Pago extends Model
             'min' => 'El campo :attribute requiere un minimo de :min caracteres',
             'valor.min' => $esRecibo ? 'Seleccione el tipo boleta si desea hacer un pago parcial' : "El pago debe ser mayor a 0 pesos",
             'max' => 'El campo :attribute requiere un maximo de :max caracteres',
-            'valor.max' => "El monto que ingresaste excede el monto a pagar $maxPago en el mes de $mes"
+            'valor.max' => "El monto que ingresaste excede el monto a pagar de $$maxPago pesos en el mes de $mes"
         ];
     }
 
