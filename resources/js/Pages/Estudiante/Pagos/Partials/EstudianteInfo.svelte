@@ -6,7 +6,11 @@
 
 <div class="row">
     <div class="buttons mb-3">
+        {#if !periodoAnterior}
         <a href={`/estudiantes/${estudiante.id}/generar-reporte`} class="btn btn-primary">Generar reporte FICOM</a>
+        {:else}
+        <a href={`/estudiantes/${estudiante.id}/generar-reporte?periodo=${periodoAnterior.periodo}`} class="btn btn-primary">Generar reporte FICOM</a>
+        {/if}
     </div>
 
     <h2>Información del estudiante{periodoAnterior ? ` - periodo ${periodoAnterior.periodo}` : ''}</h2>

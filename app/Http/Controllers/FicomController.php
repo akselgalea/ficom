@@ -6,6 +6,7 @@ use App\Exports\EstudiantesExport;
 use App\Models\Estudiante;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\Request;
 
 class FicomController extends Controller
 {
@@ -17,8 +18,10 @@ class FicomController extends Controller
     }
 
 
-    public function createReport($id) {
-        return Excel::download(new EstudiantesExport($id), "{$this->est->find($id)->rut}-reporte-ficom.xlsx");
+    public function createReport($id, Request $req) {
+        $queryPeriodo = $req->query('periodo');
+        $year = $queryPeriodo ? intval($queryPeriodo) : null;
+        return Excel::download(new EstudiantesExport($id, $year), "{$this->est->find($id)->rut}-reporte-ficom.xlsx");
     }
 
     public function createReportAll() {
