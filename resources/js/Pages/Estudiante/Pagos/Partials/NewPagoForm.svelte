@@ -23,6 +23,7 @@
 
     const yearChanged = () => {
         const year = form.anio;
+        resetErrors();
 
         axios.get(`/estudiantes/${estudianteId}/pagos/periodo/${year}`).then(res => {
             const { data } = res;
@@ -38,6 +39,10 @@
             toast.error(`No se pudo obtener los datos de pago del año ${year}`);
         })
     }
+
+    function resetErrors() {
+        errors = {};
+    }
 </script>
 
 <form id="formPago" class="mt-3 row" on:submit|preventDefault={onSubmit(form)}>
@@ -45,7 +50,7 @@
     <div class="form-group mb-3 col-6 col-md-4">
         <label for="mes" class="form-label">Mes</label>
         <!-- agregar el is-invalid -->
-        <select name="mes" class="form-control form-select {errors.mes ? 'is-invalid' : ''}" bind:value={form.mes}>
+        <select name="mes" class="form-control form-select {errors.mes ? 'is-invalid' : ''}" bind:value={form.mes} on:change={() => errors.mes = null}>
             <option value="" disabled hidden>Selecciona una opción</option>
             <option value="matricula">Matrícula</option>
             <option value="marzo">Marzo</option>
@@ -111,6 +116,7 @@
             class="form-control {errors.num_documento ? 'is-invalid' : ''}"
             bind:value={form.num_documento}
             placeholder="0"
+            on:change={() => errors.num_documento = null}
         >
 
         {#if errors.num_documento}
@@ -121,7 +127,7 @@
     </div>
     <div class="form-group mb-3 col-6 col-md-4">
         <label for="fecha_pago" class="form-label">Fecha</label>
-        <input type="date" name="fecha_pago" class="form-control {errors.fecha_pago ? 'is-invalid' : ''}" bind:value={form.fecha_pago}>
+        <input type="date" name="fecha_pago" class="form-control {errors.fecha_pago ? 'is-invalid' : ''}" bind:value={form.fecha_pago} on:change={() => errors.fecha_pago = null}>
 
         {#if errors.fecha_pago}
             <span class="invalid-feedback" role="alert">
@@ -131,7 +137,7 @@
     </div>
     <div class="form-group mb-3 col-6 col-md-4">
         <label for="valor" class="form-label">Monto</label>
-        <input type="number" name="valor" class="form-control {errors.valor ? 'is-invalid' : ''}" bind:value={form.valor}>
+        <input type="number" name="valor" class="form-control {errors.valor ? 'is-invalid' : ''}" bind:value={form.valor} on:input={() => errors.valor = null}>
 
         {#if errors.valor}
             <span class="invalid-feedback" role="alert">
@@ -141,7 +147,7 @@
     </div>
     <div class="form-group mb-3 col-6 col-md-4">
         <label for="forma" class="form-label">Forma de pago</label>
-        <select name="forma" class="form-control form-select text-capitalize {errors.forma ? 'is-invalid' : ''}" bind:value={form.forma}>
+        <select name="forma" class="form-control form-select text-capitalize {errors.forma ? 'is-invalid' : ''}" bind:value={form.forma} on:change={() => errors.forma = null}>
             <option value="" selected disabled hidden>Selecciona una opción</option>
             {#each documentoOptions[form.documento] as option }
             <option value={option} class="text-capitalize">{option}</option>
@@ -160,6 +166,7 @@
             name="observacion"
             class="form-control {errors.observacion ? 'is-invalid' : ''}"
             placeholder="Observación..."
+            on:input={() => errors.observacion = null}
         >{form.observacion}</textarea>
 
         {#if errors.observacion}
