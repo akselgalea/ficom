@@ -81,7 +81,7 @@ class EstudianteService
         $esRecibo = $req->documento === 'recibo';
         
         $minPago = $esRecibo ? $costoMensualidad : 1;
-        $maxPago = $estudiante->getPeriodoYear($req->anio)->curso->nivel->calcMensualidadYear($req->anio);
+        $maxPago = $estudiante->totalAPagar($req->anio, $req->mes);
         
         if($maxPago <= 0) return ['status' => 400, 'message' => 'Este mas ya ha sido pagado completamente'];
 

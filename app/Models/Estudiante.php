@@ -286,7 +286,7 @@ class Estudiante extends Model
         if($month == 'matricula')
             return $this->totalAPagarMatricula($year);
 
-        return $this->getTotalAPagarPorMes($year) - $this->totalPagadoMes($year, $month);
+        return intval($this->getTotalAPagarPorMes($year)) - intval($this->totalPagadoMes($year, $month));
     }
 
     public function costoMatricula($year = null) {
